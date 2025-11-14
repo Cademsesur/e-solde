@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="bg-[#F8F9FA] font-open-sans">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
         {/* Ligne 1 - Logos et liens */}
-  <div className="relative flex items-center justify-between py-5 sm:py-6 md:py-7">
+          <div className="relative flex items-center justify-between py-5 sm:py-6 md:py-7">
           <div className="h-12 sm:h-14 md:h-16 lg:h-[70px] w-[150px] sm:w-[180px] md:w-[200px] lg:w-[210px] relative">
             <Image
               src="/assets/logo.png"

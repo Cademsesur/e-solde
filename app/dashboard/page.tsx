@@ -546,12 +546,23 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
 
+  // Aperçu PDF
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState("");
+
   const handleApercu = (titre: string) => {
-    alert(`Aperçu de : ${titre}\n\nCette fonctionnalité ouvrira le document en mode visualisation.`);
+    setPreviewTitle(titre);
+    setShowPreview(true);
   };
 
+  // --- Version statique : téléchargement du PDF local ---
   const handleTelecharger = (titre: string) => {
-    alert(`Téléchargement en cours...\n\nDocument : ${titre}\n\nLe téléchargement a commencé avec succès !`);
+    const link = document.createElement('a');
+    link.href = '/assets/billet.pdf';
+    link.download = `${titre.replace(/\s+/g, '_')}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const tabs = [
@@ -585,56 +596,127 @@ export default function Dashboard() {
     }
   ];
   
-  // Filtres dynamiques selon l'onglet
-  const [payslips, setPayslips] = useState<Payslip[]>([]);
-  const [loadingPayslips, setLoadingPayslips] = useState(false);
-  const [errorPayslips, setErrorPayslips] = useState("");
-
-  useEffect(() => {
-    if (activeTab !== 0) return;
-    const fetchPayslips = async () => {
-      setLoadingPayslips(true);
-      setErrorPayslips("");
-      try {
-        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        if (!token) throw new Error("Token manquant");
-        const res = await fetch(API_PAYSLIPS_URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) throw new Error("Erreur lors de la récupération des bulletins");
-        const data = await res.json();
-        setPayslips(data.data || []);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setErrorPayslips(err.message);
-        } else {
-          setErrorPayslips("Erreur inconnue");
-        }
-      } finally {
-        setLoadingPayslips(false);
-      }
-    };
-    fetchPayslips();
-  }, [activeTab]);
+  /*
+  // --- Intégration API pour récupération des bulletins de solde ---
+  // const [payslips, setPayslips] = useState<Payslip[]>([]);
+  // const [loadingPayslips, setLoadingPayslips] = useState(false);
+  // const [errorPayslips, setErrorPayslips] = useState("");
+  // useEffect(() => {
+  //   if (activeTab !== 0) return;
+  //   const fetchPayslips = async () => {
+  //     setLoadingPayslips(true);
+  //     setErrorPayslips("");
+  //     try {
+  //       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  //       if (!token) throw new Error("Token manquant");
+  //       const res = await fetch(API_PAYSLIPS_URL, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       if (!res.ok) throw new Error("Erreur lors de la récupération des bulletins");
+  //       const data = await res.json();
+  //       setPayslips(data.data || []);
+  //     } catch (err: unknown) {
+  //       if (err instanceof Error) {
+  //         setErrorPayslips(err.message);
+  //       } else {
+  //         setErrorPayslips("Erreur inconnue");
+  //       }
+  //     } finally {
+  //       setLoadingPayslips(false);
+  //     }
+  //   };
+  //   fetchPayslips();
+  // }, [activeTab]);
+  */
   let filteredActions: { title: string; date: string; id: string }[] = [];
   let filteredDemarches: { title: string; id: string }[] = [];
 
+  // --- Tableau statique de bulletins pour la démonstration ---
   let filteredBulletins: { title: string; id: string; period?: string; net?: string; issued_at?: string }[] = [];
   if (activeTab === 0) {
-    filteredBulletins = payslips
-      .filter(p => {
-        const label = p.period?.label?.toLowerCase() || "";
-        return label.includes(search.toLowerCase()) && (filter === "" || label.includes(filter));
-      })
-      .map(p => ({
-        title: p.period?.label || "Bulletin de solde",
-        id: String(p.id),
-        period: `${p.period?.month}/${p.period?.year}`,
-        net: p.amounts?.net !== undefined && p.amounts?.net !== null ? String(p.amounts.net) : undefined,
-        issued_at: p.issued_at,
-      }));
+    const allBulletins = [
+      {
+        title: "Bulletin de solde Juin 2025",
+        id: "1",
+        period: "06/2025",
+        net: "250000",
+        issued_at: "2025-07-01",
+      },
+      {
+        title: "Bulletin de solde Mai 2025",
+        id: "2",
+        period: "05/2025",
+        net: "248000",
+        issued_at: "2025-06-01",
+      },
+      {
+        title: "Bulletin de solde Avril 2025",
+        id: "3",
+        period: "04/2025",
+        net: "247500",
+        issued_at: "2025-05-01",
+      },
+      {
+        title: "Bulletin de solde Mars 2025",
+        id: "4",
+        period: "03/2025",
+        net: "246800",
+        issued_at: "2025-04-01",
+      },
+      {
+        title: "Bulletin de solde Février 2025",
+        id: "5",
+        period: "02/2025",
+        net: "245900",
+        issued_at: "2025-03-01",
+      },
+      {
+        title: "Bulletin de solde Janvier 2025",
+        id: "6",
+        period: "01/2025",
+        net: "245000",
+        issued_at: "2025-02-01",
+      },
+      {
+        title: "Bulletin de solde Décembre 2024",
+        id: "7",
+        period: "12/2024",
+        net: "244500",
+        issued_at: "2025-01-01",
+      },
+      {
+        title: "Bulletin de solde Novembre 2024",
+        id: "8",
+        period: "11/2024",
+        net: "244000",
+        issued_at: "2024-12-01",
+      },
+      {
+        title: "Bulletin de solde Octobre 2024",
+        id: "9",
+        period: "10/2024",
+        net: "243500",
+        issued_at: "2024-11-01",
+      },
+      {
+        title: "Bulletin de solde Septembre 2024",
+        id: "10",
+        period: "09/2024",
+        net: "243000",
+        issued_at: "2024-10-01",
+      },
+    ];
+    filteredBulletins = allBulletins.filter(bulletin => {
+      const searchText = search.toLowerCase();
+      return (
+        bulletin.title.toLowerCase().includes(searchText) ||
+        (bulletin.period && bulletin.period.toLowerCase().includes(searchText)) ||
+        (bulletin.net && bulletin.net.toLowerCase().includes(searchText)) ||
+        (bulletin.issued_at && new Date(bulletin.issued_at).toLocaleDateString().toLowerCase().includes(searchText))
+      );
+    });
   }
   if (activeTab === 3) {
     // Filtrage actions
@@ -733,15 +815,11 @@ export default function Dashboard() {
         {/* Contenu de l'onglet actif */}
         <div className="p-4 sm:p-6 md:p-8">
           {activeTab === 0 && (
-            <>
-              {loadingPayslips && <div className="text-center text-gray-500 font-montserrat mb-4">Chargement des bulletins...</div>}
-              {errorPayslips && <div className="text-center text-red-500 font-montserrat mb-4">{errorPayslips}</div>}
-              <BulletinsTab
-                handleApercu={handleApercu}
-                handleTelecharger={handleTelecharger}
-                bulletins={filteredBulletins}
-              />
-            </>
+            <BulletinsTab
+              handleApercu={handleApercu}
+              handleTelecharger={handleTelecharger}
+              bulletins={filteredBulletins}
+            />
           )}
 
           {activeTab === 1 && (
@@ -756,6 +834,32 @@ export default function Dashboard() {
             <DepotDossierTab />
           )}
         </div>
+
+        {/* Modale d'aperçu PDF */}
+        {showPreview && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col relative">
+              <button
+                className="absolute top-2 right-2 text-gray-600 hover:text-black text-2xl font-bold z-10"
+                onClick={() => setShowPreview(false)}
+                aria-label="Fermer"
+              >
+                ×
+              </button>
+              <div className="p-4 border-b font-montserrat font-semibold text-lg text-[#0F2137]">
+                Aperçu : {previewTitle}
+              </div>
+              <div className="flex-1 overflow-auto flex items-center justify-center bg-gray-100">
+                <iframe
+                  src="/assets/billet.pdf"
+                  title="Aperçu PDF"
+                  className="w-full h-[70vh] rounded-b-lg border-none"
+                  style={{ minHeight: 400 }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

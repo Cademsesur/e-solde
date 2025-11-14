@@ -331,8 +331,11 @@ export default function Hero() {
       <div className="flex-1 bg-white" style={{ minHeight: '200px' }}></div>
 
         {/* Formulaire centré et superposé */}
-        <div className="absolute inset-0 flex items-end justify-center pb-8">
-          <div className="w-full max-w-[860px] mx-auto px-4" style={{ position: 'relative', zIndex: 2, marginTop: '-120px' }}>
+        <div className="absolute inset-0 flex items-center justify-center pb-8">
+          <div
+            className="w-full max-w-[860px] mx-auto px-4"
+            style={{ position: 'relative', zIndex: 2, marginTop: 'clamp(100px, 18vw, 220px)' }}
+          >
             <div className="bg-white rounded-lg shadow-2xl overflow-hidden min-h-[540px] flex flex-col justify-between" style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)' }}>
               {/* Barre tricolore */}
               <div className="flex h-2.5">
