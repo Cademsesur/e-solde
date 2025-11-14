@@ -1,26 +1,7 @@
 "use client";
 
 import { useState } from "react";
-// Type pour les données employé
-interface EmployeeData {
-  id: number;
-  niu: string;
-  first_name: string;
-  last_name: string;
-  sex: string;
-  date_of_birth: string;
-  place_of_birth: string;
-  email: string;
-  phone: string;
-  status: string;
-  org: {
-    code: string;
-    name: string;
-  };
-}
-
-const API_URL = "https://payroll-management.sesur.bj/api/partners/employees/";
-const API_TOKEN = "3|7K11AawrrXNM9N528K3u6dnFUwHDtz5MKWf8bMH93f19f9dd"; // À sécuriser côté backend en prod
+import { EmployeeData, API_EMPLOYEE_URL, API_EMPLOYEE_TOKEN, API_LOGIN_URL, API_REGISTER_URL, API_VERIFY_2FA_URL, API_SET_PASSWORD_URL } from "../api/config";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Check } from "lucide-react";
 import Image from "next/image";
@@ -143,9 +124,9 @@ export default function Hero() {
     setLoadingNiu(true);
     setErrorNiu("");
     try {
-      const res = await fetch(`${API_URL}${niu}`, {
+      const res = await fetch(`${API_EMPLOYEE_URL}${niu}`, {
         headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
+          Authorization: `Bearer ${API_EMPLOYEE_TOKEN}`,
         },
       });
       if (!res.ok) throw new Error("NIU introuvable ou erreur serveur");
@@ -168,7 +149,7 @@ export default function Hero() {
     setRegisterError("");
     if (!employee) return;
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/user/register", {
+  const res = await fetch(API_REGISTER_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -216,7 +197,7 @@ export default function Hero() {
     if (!otpCode.trim()) return;
     setOtpLoading(true);
     try {
-      const res = await fetch("https://esolde.sesur.bj/api/auth/verify-2fa", {
+  const res = await fetch(API_VERIFY_2FA_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -248,7 +229,7 @@ export default function Hero() {
       }
       setPasswordLoading(true);
       try {
-        const res = await fetch("https://esolde.sesur.bj/api/user/set-first-password", {
+  const res = await fetch(API_SET_PASSWORD_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -290,7 +271,7 @@ export default function Hero() {
     if (matricule.trim() && password.trim()) {
       setLoginLoading(true);
       try {
-        const res = await fetch("https://esolde.sesur.bj/api/auth/login", {
+          const res = await fetch(API_LOGIN_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -304,6 +285,8 @@ export default function Hero() {
         }
         if (typeof window !== "undefined" && data.token) {
           localStorage.setItem('token', data.token);
+          // Stocke aussi dans les cookies pour le middleware Next.js
+          document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Lax`;
         }
         router.push('/dashboard');
       } catch (err) {
@@ -330,7 +313,6 @@ export default function Hero() {
   return (
     <>
       <Header />
-      
       <section className="relative flex flex-col" style={{ minHeight: '85vh' }}>
         {/* Image de fond */}
         <div className="relative w-full" style={{ height: '55vh', minHeight: '380px' }}>
@@ -346,10 +328,10 @@ export default function Hero() {
         </div>
 
         {/* Zone blanche en bas */}
-        <div className="flex-1 bg-white" style={{ minHeight: '200px' }}></div>
+      <div className="flex-1 bg-white" style={{ minHeight: '200px' }}></div>
 
         {/* Formulaire centré et superposé */}
-  <div className="absolute inset-0 flex items-end justify-center pb-8">
+        <div className="absolute inset-0 flex items-end justify-center pb-8">
           <div className="w-full max-w-[860px] mx-auto px-4" style={{ position: 'relative', zIndex: 2, marginTop: '-120px' }}>
             <div className="bg-white rounded-lg shadow-2xl overflow-hidden min-h-[540px] flex flex-col justify-between" style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)' }}>
               {/* Barre tricolore */}

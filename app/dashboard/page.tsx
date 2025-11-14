@@ -1,23 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { API_PAYSLIPS_URL, Payslip, TabCardProps, DocumentCardProps } from "../api/config";
 import { Search, Filter, Eye, Download, FileText, LayoutDashboard, FolderOpen, HandCoins, ChevronRight, ChevronDown } from "lucide-react";
-import DashboardHeader from "../components/DashboardHeader";
-
-// Header du dashboard importé
-
-// Composant Tab Card
-type TabCardProps = {
-  tab: {
-    icon: React.ElementType;
-    name: string;
-    description: string;
-    color?: string;
-    bgColor?: string;
-  };
-  isActive: boolean;
-  onClick: () => void;
-};
+import DashboardHeader from "./DashboardHeader";
 
 const TabCard = ({ tab, isActive, onClick }: TabCardProps) => {
   const Icon = tab.icon;
@@ -106,14 +92,7 @@ const SearchBar = ({ value, onChange, filter, onFilterChange }: { value: string;
   </div>
 );
 
-// Composant Document Card
-type DocumentCardProps = {
-  title: string;
-  onPreview?: () => void;
-  onDownload: () => void;
-  date?: string;
-  showPreview?: boolean;
-};
+// Composant Document Card (type importé)
 
 const DocumentCard = ({
   title,
@@ -607,19 +586,6 @@ export default function Dashboard() {
   ];
   
   // Filtres dynamiques selon l'onglet
-  type Payslip = {
-    id: string | number;
-    period?: {
-      label?: string;
-      month?: string | number;
-      year?: string | number;
-    };
-    amounts?: {
-      net?: string | number;
-    };
-    issued_at?: string;
-    // Add other fields as needed
-  };
   const [payslips, setPayslips] = useState<Payslip[]>([]);
   const [loadingPayslips, setLoadingPayslips] = useState(false);
   const [errorPayslips, setErrorPayslips] = useState("");
@@ -632,7 +598,7 @@ export default function Dashboard() {
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         if (!token) throw new Error("Token manquant");
-        const res = await fetch("https://esolde.sesur.bj/api/me/payslips", {
+        const res = await fetch(API_PAYSLIPS_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

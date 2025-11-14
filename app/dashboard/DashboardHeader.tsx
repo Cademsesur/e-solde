@@ -1,18 +1,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
-type UserProfile = {
-  id: number;
-  reference: string;
-  name: string;
-  email: string;
-  phone: string;
-  employee_niu?: string;
-  employee_matricule?: string;
-  poste?: string;
-  avatar?: string;
-};
+import { API_PROFILE_URL, UserProfile } from "../api/config";
 
 export default function DashboardHeader() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -24,7 +13,7 @@ export default function DashboardHeader() {
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         console.log('[DashboardHeader] Token:', token);
         if (!token) return;
-        const res = await fetch("https://esolde.sesur.bj/api/auth/me", {
+        const res = await fetch(API_PROFILE_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
