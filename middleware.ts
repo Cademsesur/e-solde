@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Liste des routes protégées (ici tout ce qui commence par /dashboard)
-const protectedRoutes = ['/dashboard'];
+// Liste des routes protégées
+const protectedRoutes = ['/dashboard', '/settings'];
 
 export function middleware(request: NextRequest) {
   // Vérifie si la route est protégée
@@ -23,5 +23,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/settings/:path*'],
 };

@@ -29,7 +29,8 @@ export default function DepotDossierTab() {
       {/* Sous-onglets */}
       <div className="flex gap-2 mb-6">
         <div
-          className={`px-5 py-2 font-montserrat font-semibold text-sm sm:text-base cursor-pointer transition-all relative ${
+          style={{ fontFamily: 'Montserrat', fontWeight: 600, fontSize: '20px', lineHeight: '100%', verticalAlign: 'middle' }}
+          className={`px-5 py-2 cursor-pointer transition-all relative ${
             subTab === 'deposer' ? 'text-[#1E1E1E]' : 'text-gray-400'
           }`}
           onClick={() => setSubTab('deposer')}
@@ -40,7 +41,8 @@ export default function DepotDossierTab() {
           )}
         </div>
         <div
-          className={`px-5 py-2 font-montserrat font-semibold text-sm sm:text-base cursor-pointer transition-all relative ${
+          style={{ fontFamily: 'Montserrat', fontWeight: 600, fontSize: '20px', lineHeight: '100%', verticalAlign: 'middle' }}
+          className={`px-5 py-2 cursor-pointer transition-all relative ${
             subTab === 'mesdossiers' ? 'text-[#1E1E1E]' : 'text-gray-400'
           }`}
           onClick={() => setSubTab('mesdossiers')}
@@ -60,16 +62,31 @@ export default function DepotDossierTab() {
               key={idx} 
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4"
             >
-              <span className="text-base sm:text-lg font-bold text-[#1E1E1E] font-montserrat flex-1">
+              <span 
+                className="font-montserrat flex-1"
+                style={{
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '24px',
+                  color: '#1E1E1E'
+                }}
+              >
                 {item.title}
               </span>
               <button
-                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap px-5 py-2 rounded-lg"
+                className="flex items-center gap-1.5 sm:gap-2 font-montserrat hover:opacity-80 cursor-pointer whitespace-nowrap px-5 py-2 rounded-lg"
                 onClick={() => {
                   setSelectedTitle(item.title);
                   setIsModalOpen(true);
                 }}
-                style={{ color: '#079748', background: 'transparent' }}
+                style={{ 
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '20px',
+                  textAlign: 'center',
+                  color: '#079748', 
+                  background: 'transparent' 
+                }}
               >
                 Soumettre un dossier
                 <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
@@ -102,7 +119,15 @@ export default function DepotDossierTab() {
                 key={idx} 
                 className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4"
               >
-                <span className="text-base sm:text-lg font-bold text-[#1E1E1E] font-montserrat flex-1">
+                <span 
+                  className="font-montserrat flex-1"
+                  style={{
+                    fontWeight: 500,
+                    fontSize: '18px',
+                    lineHeight: '24px',
+                    color: '#1E1E1E'
+                  }}
+                >
                   {item.title}
                 </span>
                 <span

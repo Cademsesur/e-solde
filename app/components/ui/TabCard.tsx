@@ -1,7 +1,3 @@
-/**
- * Composant carte d'onglet pour le dashboard
- */
-
 import type { TabCardProps } from '@/app/types';
 
 export function TabCard({ tab, isActive, onClick }: TabCardProps) {
@@ -31,14 +27,24 @@ export function TabCard({ tab, isActive, onClick }: TabCardProps) {
 
       <div className="flex-1 min-w-0">
         <h3 
-          className="text-sm sm:text-base md:text-lg font-bold font-montserrat mb-1 sm:mb-2"
-          style={{ color: isActive ? '#FFFFFF' : '#000000' }}
+          className="font-montserrat mb-1 sm:mb-2"
+          style={{ 
+            fontWeight: 600,
+            fontSize: '20px',
+            lineHeight: '120%',
+            color: isActive ? '#FFFFFF' : '#1E1E1E'
+          }}
         >
           {tab.name}
         </h3>
         <p 
-          className="text-xs sm:text-sm font-montserrat leading-relaxed"
-          style={{ color: isActive ? '#FFFFFF' : '#000000' }}
+          className="font-montserrat"
+          style={{ 
+            fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '120%',
+            color: isActive ? '#FFFFFF' : '#1E1E1E'
+          }}
         >
           {tab.description}
         </p>
