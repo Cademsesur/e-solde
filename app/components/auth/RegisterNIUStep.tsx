@@ -55,26 +55,26 @@ export default function RegisterNIUStep({ onSuccess, onBack }: RegisterNIUStepPr
 
       {/* Switch between NIU and Matricule */}
       <div
-        className="relative flex items-center mb-8 mx-auto"
+        className="relative flex items-center mb-6 sm:mb-8 mx-auto"
         style={{
           maxWidth: '779px',
           width: '100%',
-          height: '63px',
+          height: '52px',
           borderRadius: '67px',
           backgroundColor: '#F9F9FB',
-          padding: '6px',
+          padding: '4px',
         }}
       >
         {/* Active button background */}
         <div
           className={`absolute transition-all duration-300 ease-in-out rounded-3xl`}
           style={{
-            width: 'calc(50% - 6px)',
-            height: '51px',
+            width: 'calc(50% - 4px)',
+            height: '44px',
             borderRadius: '30px',
             backgroundColor: '#FFFFFF',
             boxShadow: '0px 4px 120px 0px #0000001A',
-            left: isNIUMode ? '6px' : 'calc(50% + 6px)',
+            left: isNIUMode ? '4px' : 'calc(50% + 4px)',
           }}
         />
 
@@ -82,28 +82,30 @@ export default function RegisterNIUStep({ onSuccess, onBack }: RegisterNIUStepPr
         <button
           type="button"
           onClick={() => setIsNIUMode(true)}
-          className={`relative z-10 flex-1 font-montserrat font-semibold text-sm transition-all px-6 py-4 rounded-3xl cursor-pointer`}
+          className={`relative z-10 flex-1 font-montserrat font-semibold text-xs sm:text-sm transition-all px-3 sm:px-6 py-3 sm:py-4 rounded-3xl cursor-pointer`}
           style={{
             color: isNIUMode ? '#047236' : '#343D48',
           }}
         >
-          M&#39;inscrire avec mon NIU
+          <span className="hidden sm:inline">M&#39;inscrire avec mon NIU</span>
+          <span className="sm:hidden">NIU</span>
         </button>
 
         {/* Button 2: Matricule */}
         <button
           type="button"
           onClick={() => setIsNIUMode(false)}
-          className={`relative z-10 flex-1 font-montserrat font-semibold text-sm transition-all px-6 py-4 rounded-3xl cursor-pointer`}
+          className={`relative z-10 flex-1 font-montserrat font-semibold text-xs sm:text-sm transition-all px-3 sm:px-6 py-3 sm:py-4 rounded-3xl cursor-pointer`}
           style={{
             color: !isNIUMode ? '#047236' : '#343D48',
           }}
         >
-          M&#39;inscrire avec mon matricule
+          <span className="hidden sm:inline">M&#39;inscrire avec mon Matricule</span>
+          <span className="sm:hidden">Matricule</span>
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {isNIUMode ? (
           <FormInput
             label="Entrez votre Numéro d'Identification Unique"
@@ -136,8 +138,8 @@ export default function RegisterNIUStep({ onSuccess, onBack }: RegisterNIUStepPr
           Continuer
         </FormButton>
 
-        <p className="text-center text-base font-montserrat text-[#343D48] pt-2">
-          Vous n&#39;avez pas de compte?{' '}
+        <p className="text-center text-xs sm:text-sm md:text-base font-montserrat text-[#343D48] pt-1 sm:pt-2">
+          Vous avez déjà un compte?{' '}
           <button 
             type="button"
             onClick={onBack}

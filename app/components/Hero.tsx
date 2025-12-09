@@ -44,37 +44,103 @@ export default function Hero() {
   return (
     <>
       <Header />
-      <section className="relative flex flex-col">
+      
+      {/* Version Mobile */}
+      <section className="sm:hidden relative min-h-screen flex flex-col">
+        {/* Image de fond mobile */}
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src="/assets/hero-sold.png"
+            alt="Hero background"
+            width={1920}
+            height={1080}
+            className="w-full h-full object-cover"
+            priority
+            style={{ objectPosition: 'center top' }}
+          />
+        </div>
+        
+        {/* Overlay semi-transparent pour améliorer la lisibilité */}
+        <div className="absolute inset-0 bg-black/20"></div>
+
+        {/* Formulaire centré */}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-20">
+          <div className="w-full max-w-[860px] mx-auto">
+            <div 
+              className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col" 
+              style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)' }}
+            >
+              {/* Barre tricolore */}
+              <div className="flex h-2">
+                <div className="flex-1 bg-[#009543]"></div>
+                <div className="flex-1 bg-[#FFD600]"></div>
+                <div className="flex-1 bg-[#EF1A1A]"></div>
+              </div>
+              <div className="p-6">
+                {!showInscription ? (
+                  <LoginForm onSwitchToRegister={() => setShowInscription(true)} />
+                ) : inscriptionStep === 1 ? (
+                  <RegisterNIUStep 
+                    onSuccess={handleEmployeeFound}
+                    onBack={resetInscription}
+                  />
+                ) : inscriptionStep === 2 && employee ? (
+                  <RegisterInfoStep
+                    employee={employee}
+                    onSuccess={handleRegistrationSuccess}
+                    onBack={() => setInscriptionStep(1)}
+                  />
+                ) : inscriptionStep === 3 && registerToken ? (
+                  <RegisterOTPStep
+                    registerToken={registerToken}
+                    onSuccess={handleOTPSuccess}
+                    onBack={() => setInscriptionStep(2)}
+                  />
+                ) : inscriptionStep === 4 && registerToken ? (
+                  <RegisterPasswordStep
+                    registerToken={registerToken}
+                    onSuccess={handlePasswordSuccess}
+                    onBack={() => setInscriptionStep(3)}
+                  />
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Version Desktop */}
+      <section className="hidden sm:block relative min-h-[700px] md:min-h-[750px] lg:min-h-[800px]">
         {/* Image de fond */}
         <div className="relative w-full">
           <Image
             src="/assets/hero-sold.png"
             alt="Hero background"
-            width={1920} // Remplace par la largeur réelle de l'image
-            height={600} // Remplace par la hauteur réelle de l'image
-            className="w-auto h-auto"
+            width={1920}
+            height={600}
+            className="w-full h-auto object-cover"
             priority
             style={{ objectPosition: 'center top' }}
           />
         </div>
 
         {/* Zone blanche en bas */}
-        <div className="flex-1 bg-white" style={{ minHeight: '200px' }}></div>
+        <div className="bg-white" style={{ minHeight: '300px' }}></div>
 
         {/* Formulaire centré et superposé */}
-        <div className="absolute inset-0 flex items-center justify-center pb-8">
-          <div
-            className="w-full max-w-[860px] mx-auto px-4"
-            style={{ position: 'relative', zIndex: 2, marginTop: 'clamp(100px, 18vw, 220px)' }}
-          >
-            <div className="bg-white rounded-lg shadow-2xl overflow-hidden min-h-[540px] flex flex-col justify-between" style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)' }}>
+        <div className="absolute top-0 left-0 right-0 flex items-start justify-center px-4 pt-32 md:pt-40 lg:pt-48">
+          <div className="w-full max-w-[860px] mx-auto">
+            <div 
+              className="bg-white rounded-[10px] shadow-2xl overflow-hidden flex flex-col" 
+              style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)' }}
+            >
               {/* Barre tricolore */}
               <div className="flex h-2.5">
                 <div className="flex-1 bg-[#009543]"></div>
                 <div className="flex-1 bg-[#FFD600]"></div>
                 <div className="flex-1 bg-[#EF1A1A]"></div>
               </div>
-              <div className="p-8 sm:p-12 lg:p-16">
+              <div className="p-8 md:p-12 lg:p-16">
                 {!showInscription ? (
                   <LoginForm onSwitchToRegister={() => setShowInscription(true)} />
                 ) : inscriptionStep === 1 ? (

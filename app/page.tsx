@@ -7,10 +7,10 @@ export default function Home() {
 		<div className="min-h-screen bg-background text-primary flex flex-col">
 			<main className="flex-1 flex flex-col w-full">
 				
-				<div className="pb-8 md:pb-12 lg:pb-16">
+				<div className="mb-8 sm:mb-0">
 					<Hero />
 				</div>
-				<div className="py-8 md:py-12 lg:py-16">
+				<div className="py-8 sm:py-12 md:py-16 lg:py-20 mt-0 sm:mt-8 md:mt-12 lg:mt-16">
 					<Features />
 				</div>
 			</main>

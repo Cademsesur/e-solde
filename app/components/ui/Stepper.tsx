@@ -19,8 +19,8 @@ export function Stepper({ currentStep }: StepperProps) {
       style={{
         border: '1px solid #F2F2F2',
         borderRadius: '37px',
-        height: '58px',
-        padding: '0 16px',
+        height: '48px',
+        padding: '0 8px',
         maxWidth: '779px',
       }}
     >
@@ -31,10 +31,10 @@ export function Stepper({ currentStep }: StepperProps) {
         return (
           <div key={idx} className="flex items-center h-full flex-1 justify-center">
             {/* Contenu du step */}
-            <div className="flex items-center justify-center gap-2 flex-col sm:flex-row h-full">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-row h-full">
               {/* Cercle du step */}
               <div
-                className={`w-8 h-8 flex items-center justify-center rounded-full border-2 shrink-0 font-montserrat font-bold text-xs ${
+                className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full border-2 shrink-0 font-montserrat font-bold text-[10px] sm:text-xs ${
                   isActive 
                     ? 'border-[#047236] bg-[#047236] text-white' 
                     : isCompleted 
@@ -43,15 +43,15 @@ export function Stepper({ currentStep }: StepperProps) {
                 }`}
               >
                 {isCompleted || isActive ? (
-                  <Check className="w-4 h-4 text-white" strokeWidth={3} />
+                  <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" strokeWidth={3} />
                 ) : (
                   <span>{idx + 1}</span>
                 )}
               </div>
 
-              {/* Label du step */}
+              {/* Label du step - visible uniquement sur sm et plus */}
               <span
-                className={`text-xs font-montserrat truncate hidden sm:inline max-w-20 ${
+                className={`text-[10px] sm:text-xs font-montserrat truncate hidden sm:inline max-w-14 md:max-w-20 ${
                   isActive 
                     ? 'text-[#047236] font-semibold' 
                     : isCompleted
@@ -66,10 +66,10 @@ export function Stepper({ currentStep }: StepperProps) {
             {/* Séparateur chevron pointant à droite */}
             {idx < steps.length - 1 && (
               <svg
-                width="20"
-                height="58"
-                viewBox="0 0 20 58"
-                className="shrink-0"
+                width="12"
+                height="48"
+                viewBox="0 0 12 48"
+                className="shrink-0 hidden xs:block"
                 style={{
                   overflow: 'visible',
                   margin: '0 auto',

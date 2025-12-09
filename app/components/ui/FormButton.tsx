@@ -18,7 +18,7 @@ export function FormButton({
   ...props 
 }: FormButtonProps) {
   const baseClasses = `
-    w-full h-[52px] px-6 rounded-lg text-base font-semibold font-montserrat
+    w-full h-11 sm:h-12 md:h-[52px] px-4 sm:px-6 rounded-lg text-sm sm:text-base font-semibold font-montserrat
     transition-colors duration-200 cursor-pointer
     disabled:opacity-50 disabled:cursor-not-allowed
   `.trim().replace(/\s+/g, ' ');

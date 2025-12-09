@@ -14,14 +14,14 @@ export function FormInput({ label, error, id, className, ...props }: FormInputPr
     <div className="w-full">
       <label 
         htmlFor={inputId} 
-        className="block text-sm font-semibold font-montserrat text-[#0F2137] mb-2"
+        className="block text-xs sm:text-sm font-semibold font-montserrat text-[#0F2137] mb-1.5 sm:mb-2"
       >
         {label}
       </label>
       <input
         id={inputId}
         className={`
-          w-full h-[52px] px-4 rounded-md text-base font-montserrat bg-white
+          w-full h-[44px] sm:h-[48px] md:h-[52px] px-3 sm:px-4 rounded-md text-sm sm:text-base font-montserrat bg-white
           placeholder:text-[#999999] transition-all duration-200
           focus:outline-none focus:ring-2 focus:ring-[#0F2137] focus:border-transparent
           disabled:bg-gray-100 disabled:cursor-not-allowed
@@ -31,7 +31,7 @@ export function FormInput({ label, error, id, className, ...props }: FormInputPr
         {...props}
       />
       {error && (
-        <p className="text-sm font-montserrat text-[#EF1A1A] mt-1">
+        <p className="text-xs sm:text-sm font-montserrat text-[#EF1A1A] mt-1">
           {error}
         </p>
       )}

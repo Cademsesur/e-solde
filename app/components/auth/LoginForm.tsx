@@ -36,11 +36,11 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
       <FormSectionTitle>Connexion</FormSectionTitle>
 
-      <p className="text-sm sm:text-base font-montserrat text-center mb-6 text-[#343D48]">
+      <p className="text-xs sm:text-sm md:text-base font-montserrat text-center mb-4 sm:mb-6 text-[#343D48]">
         Connectez-vous en entrant vos identifiants pour accéder à la plateforme.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
         <FormInput
           label="Entrez votre numéro matricule"
           type="text"
@@ -62,7 +62,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         <div className="text-center">
           <a 
             href="#" 
-            className="text-sm font-montserrat text-[#047236] hover:underline transition-all"
+            className="text-xs sm:text-sm font-montserrat text-[#047236] hover:underline transition-all"
           >
             Mot de passe oublié?
           </a>
@@ -78,7 +78,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           Connexion
         </FormButton>
 
-        <p className="text-center text-base font-montserrat text-[#343D48] pt-2">
+        <p className="text-center text-xs sm:text-sm md:text-base font-montserrat text-[#343D48] pt-1 sm:pt-2">
           Vous n&#39;avez pas de compte?{' '}
           <button 
             type="button"

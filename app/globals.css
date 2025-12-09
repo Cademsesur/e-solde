@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
+/* Configuration de base pour le body */
 body {
 	background: #FFFFFF;
 	color: #1E1E1E;
+	overflow-x: hidden;
+}
+
+/* Optimisation mobile - empêcher le zoom sur les inputs */
+@media screen and (max-width: 640px) {
+	input[type="text"],
+	input[type="password"],
+	input[type="email"],
+	input[type="tel"],
+	select,
+	textarea {
+		font-size: 16px !important;
+	}
 }
 
 .text-primary {
