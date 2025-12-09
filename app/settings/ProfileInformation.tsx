@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useProfile } from "@/app/lib/hooks/useProfile";
-import { Eye, Download } from "lucide-react";
+import { Eye, Download, LogOut } from "lucide-react";
+import { ROUTES } from "@/app/constants";
 
 export default function ProfileInformation() {
   const { profile, isLoading } = useProfile();
+  const router = useRouter();
   const [subTab, setSubTab] = useState<'informations' | 'documents'>('informations');
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Documents personnels
   const documents = [
@@ -22,6 +26,14 @@ export default function ProfileInformation() {
   const handleTelecharger = (titre: string) => {
     console.log("Télécharger:", titre);
     // TODO: Implémenter le téléchargement
+  };
+
+  const handleLogout = () => {
+    setIsLoggingOut(true);
+    // Supprimer le token du localStorage
+    localStorage.removeItem('token');
+    // Rediriger vers la page de connexion
+    router.push(ROUTES.HOME);
   };
 
 
@@ -209,6 +221,18 @@ export default function ProfileInformation() {
           ))}
         </div>
       )}
+
+      {/* Bouton de déconnexion */}
+      <div className="mt-8 pt-8 border-t border-gray-200 flex justify-center">
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center justify-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-montserrat font-semibold text-lg rounded-lg transition-colors shadow-md hover:shadow-lg disabled:cursor-not-allowed"
+        >
+          <LogOut className="w-5 h-5" />
+          {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
+        </button>
+      </div>
     </div>
   );
 }
