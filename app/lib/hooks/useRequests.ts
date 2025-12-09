@@ -33,35 +33,22 @@ export function useRequests() {
   /**
    * Récupère l'historique des demandes
    * @param token - Token d'authentification
-   * @param services - Liste des services (optionnel, sinon utilise l'état interne)
    */
-  const fetchMyRequests = useCallback(async (token: string, servicesList?: Service[]) => {
+  const fetchMyRequests = useCallback(async (token: string) => {
     setIsLoading(true);
     setError(null);
     try {
-      // Utiliser les services fournis ou ceux de l'état
-      const servicesToUse = servicesList || services;
-      
-      if (servicesToUse.length === 0) {
-        console.warn('Aucun service disponible pour récupérer les demandes');
-        setMyRequests([]);
-        return;
-      }
-      
-      const data = await requestService.getMyRequests(servicesToUse, token);
+      const data = await requestService.getMyRequests(token);
       setMyRequests(data);
     } catch (err) {
-      // Ne pas afficher d'erreur si l'endpoint n'est pas disponible
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement de l\'historique';
       console.warn('fetchMyRequests:', errorMessage);
       // Garder un tableau vide au lieu d'afficher une erreur
       setMyRequests([]);
-      // Ne pas définir d'erreur pour ne pas perturber l'UX
-      // setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [services]);
+  }, []);
 
   /**
    * Soumet une nouvelle demande
@@ -76,9 +63,7 @@ export function useRequests() {
     try {
       const result = await requestService.submitRequest(serviceId, documents, token);
       // Rafraîchir la liste des demandes après soumission
-      if (services.length > 0) {
-        await fetchMyRequests(token, services);
-      }
+      await fetchMyRequests(token);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la soumission';
@@ -88,7 +73,7 @@ export function useRequests() {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchMyRequests, services]);
+  }, [fetchMyRequests]);
 
   return {
     services,

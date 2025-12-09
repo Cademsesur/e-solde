@@ -13,21 +13,14 @@ export default function DepotDossierTab() {
   
   const { services, myRequests, isLoading, error, fetchServices, fetchMyRequests } = useRequests();
 
-  // Charger les services au montage du composant
+  // Charger les services et les demandes au montage du composant
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       fetchServices(token);
+      fetchMyRequests(token);
     }
-  }, [fetchServices]);
-
-  // Charger les demandes une fois que les services sont disponibles
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token && services.length > 0) {
-      fetchMyRequests(token, services);
-    }
-  }, [services, fetchMyRequests]);
+  }, [fetchServices, fetchMyRequests]);
 
   // Mapper le statut API vers le statut d'affichage
   const getStatusDisplay = (status: string) => {

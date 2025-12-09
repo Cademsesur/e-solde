@@ -168,6 +168,7 @@ export interface ServiceRequest {
     updated_at: string;
   };
   documents: UploadedDocument[];
+  result: string | null;
 }
 
 export interface UploadedDocument {

@@ -77,11 +77,51 @@ class RequestService {
   }
 
   /**
-   * Récupère l'historique des demandes de l'utilisateur pour tous les services
-   * @param services - Liste des services disponibles
-   * @param token - Token d'authentification
+   * Récupère l'historique des demandes de l'utilisateur
+   * Utilise l'endpoint /api/me/service-requests qui retourne toutes les demandes
    */
-  async getMyRequests(services: Service[], token: string): Promise<ServiceRequest[]> {
+  async getMyRequests(token: string): Promise<ServiceRequest[]> {
+    try {
+      const response = await fetch(API_ENDPOINTS.MY_SERVICE_REQUESTS, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Erreur API mes demandes:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        
+        // Retourner un tableau vide si l'endpoint n'est pas disponible
+        if (response.status === 404) {
+          return [];
+        }
+        
+        throw new Error(`Erreur lors de la récupération des demandes (${response.status}): ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    } catch (error) {
+      console.error('Erreur complète getMyRequests:', error);
+      // Retourner un tableau vide en cas d'erreur réseau
+      if (error instanceof TypeError) {
+        return [];
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * @deprecated Utiliser getMyRequests() à la place
+   * Récupère l'historique des demandes de l'utilisateur pour tous les services
+   * Cette méthode est conservée pour compatibilité mais n'est plus utilisée
+   */
+  async getMyRequestsByServices(services: Service[], token: string): Promise<ServiceRequest[]> {
     try {
       // Récupérer les demandes pour chaque service en parallèle
       const requestsPromises = services.map(async (service) => {
