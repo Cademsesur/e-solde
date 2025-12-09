@@ -6,6 +6,7 @@
 export interface EmployeeData {
   id: number;
   niu: string;
+  matricule?: string;
   first_name: string;
   last_name: string;
   sex: string;
@@ -69,6 +70,7 @@ export interface LoginCredentials {
 
 export interface RegisterData {
   niu: string;
+  matricule: string;
   date_of_birth: string;
   email: string;
   phone: string;
@@ -122,6 +124,80 @@ export interface ActionItem {
 export interface DemarcheItem {
   title: string;
   id: string;
+}
+
+// ====== Types Guide/Service ======
+export interface RequiredDocument {
+  id: number;
+  label: string;
+  type: string;
+  is_required: boolean;
+}
+
+export interface Guide {
+  id: number;
+  name: string;
+  description: string;
+  procedure: string;
+  procedure_file_path: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  required_documents: RequiredDocument[];
+}
+
+export interface GuidesResponse {
+  data: Guide[];
+}
+
+// ====== Types Dépôt de Dossier ======
+export interface ServiceRequest {
+  id: number;
+  status: 'submitted' | 'processing' | 'completed' | 'rejected';
+  submitted_at: string;
+  processed_at: string | null;
+  rejection_comment: string | null;
+  service: {
+    id: number;
+    name: string;
+    description: string;
+    procedure: string;
+    procedure_file_path: string | null;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  documents: UploadedDocument[];
+}
+
+export interface UploadedDocument {
+  id: number;
+  required_document_id: number;
+  file_path: string;
+  file_original_name: string;
+  mime_type: string;
+  uploaded_at: string;
+}
+
+export interface SubmitRequestResponse {
+  data: ServiceRequest;
+  message: string;
+}
+
+export interface Service {
+  id: number;
+  name: string;
+  description: string;
+  procedure: string;
+  procedure_file_path: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  required_documents: RequiredDocument[];
+}
+
+export interface ServicesResponse {
+  data: Service[];
 }
 
 // ====== Types Erreur ======

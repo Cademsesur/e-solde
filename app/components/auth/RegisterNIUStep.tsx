@@ -12,10 +12,11 @@ import type { EmployeeData } from "@/app/types";
 
 interface RegisterNIUStepProps {
   onSuccess: (employeeData: EmployeeData) => void;
+  onMatriculeSuccess: (matricule: string) => void;
   onBack: () => void;
 }
 
-export default function RegisterNIUStep({ onSuccess, onBack }: RegisterNIUStepProps) {
+export default function RegisterNIUStep({ onSuccess, onMatriculeSuccess, onBack }: RegisterNIUStepProps) {
   const { getEmployeeByNIU, isLoading, error } = useAuth();
   const [niu, setNiu] = useState("");
   const [matricule, setMatricule] = useState("");
@@ -32,8 +33,8 @@ export default function RegisterNIUStep({ onSuccess, onBack }: RegisterNIUStepPr
       }
     } else {
       if (!matricule.trim()) return;
-      // TODO: Call getEmployeeByMatricule when available
-      console.log('Matricule:', matricule);
+      // Passer au formulaire manuel pour le matricule
+      onMatriculeSuccess(matricule.trim());
     }
   };
 

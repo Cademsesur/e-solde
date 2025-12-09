@@ -1,28 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Download } from "lucide-react";
 import DocumentUploadModal from "./DocumentUploadModal";
+import { useRequests } from "@/app/lib/hooks";
+import type { Service } from "@/app/types";
 
 export default function DepotDossierTab() {
   const [subTab, setSubTab] = useState<'deposer' | 'mesdossiers'>('deposer');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  
+  const { services, myRequests, isLoading, error, fetchServices, fetchMyRequests } = useRequests();
 
-  // Données statiques
-  const depots = [
-    { title: 'Prestations familiales' },
-    { title: 'Situations matrimoniales' },
-    { title: 'Rappels' },
-    { title: 'Indemnités et primes' },
-  ];
+  // Charger les services au montage du composant
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchServices(token);
+    }
+  }, [fetchServices]);
 
-  const mesDossiers = [
-    { title: 'Prestations familiales', status: 'En cours', color: '#FFD600' },
-    { title: 'Rappels', status: 'Terminé', color: '#079748' },
-    { title: 'Situations matrimoniales', status: 'Terminé', color: '#079748' },
-    { title: 'Indemnités et primes', status: 'Rejeté', color: '#EF1A1A' },
-  ];
+  // Charger les demandes une fois que les services sont disponibles
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && services.length > 0) {
+      fetchMyRequests(token, services);
+    }
+  }, [services, fetchMyRequests]);
+
+  // Mapper le statut API vers le statut d'affichage
+  const getStatusDisplay = (status: string) => {
+    const statusMap: Record<string, { label: string; bg: string; color: string }> = {
+      'submitted': { label: 'En cours', bg: '#355F9E1A', color: '#355F9E' },
+      'processing': { label: 'En cours', bg: '#355F9E1A', color: '#355F9E' },
+      'completed': { label: 'Terminé', bg: '#E6F5ED', color: '#079748' },
+      'rejected': { label: 'Rejeté', bg: '#EB34261A', color: '#EB3426' },
+    };
+    return statusMap[status] || { label: status, bg: '#F5F5F5', color: '#1E1E1E' };
+  };
+
+  // Formater la date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
 
   return (
     <div>
@@ -57,9 +83,27 @@ export default function DepotDossierTab() {
       {/* Contenu du sous-onglet */}
       {subTab === 'deposer' && (
         <div className="bg-white rounded-[10px] p-0">
-          {depots.map((item, idx) => (
+          {isLoading && (
+            <div className="px-6 py-8 text-center text-gray-500">
+              Chargement des services...
+            </div>
+          )}
+          
+          {error && (
+            <div className="px-6 py-8 text-center text-red-500">
+              {error}
+            </div>
+          )}
+          
+          {!isLoading && !error && services.length === 0 && (
+            <div className="px-6 py-8 text-center text-gray-500">
+              Aucun service disponible pour le moment
+            </div>
+          )}
+          
+          {!isLoading && !error && services.map((service) => (
             <div 
-              key={idx} 
+              key={service.id} 
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4"
             >
               <span 
@@ -71,12 +115,12 @@ export default function DepotDossierTab() {
                   color: '#1E1E1E'
                 }}
               >
-                {item.title}
+                {service.name}
               </span>
               <button
                 className="flex items-center gap-1.5 sm:gap-2 font-montserrat hover:opacity-80 cursor-pointer whitespace-nowrap px-5 py-2 rounded-lg"
                 onClick={() => {
-                  setSelectedTitle(item.title);
+                  setSelectedService(service);
                   setIsModalOpen(true);
                 }}
                 style={{ 
@@ -98,49 +142,64 @@ export default function DepotDossierTab() {
 
       {subTab === 'mesdossiers' && (
         <div className="bg-white rounded-[10px] p-0">
-          {mesDossiers.map((item, idx) => {
-            let bg = '';
-            let color = '';
-            if (item.status === 'En cours') { 
-              bg = '#355F9E1A'; 
-              color = '#355F9E'; 
-            }
-            if (item.status === 'Terminé') { 
-              bg = '#E6F5ED'; 
-              color = '#079748'; 
-            }
-            if (item.status === 'Rejeté') { 
-              bg = '#EB34261A'; 
-              color = '#EB3426'; 
-            }
+          {isLoading && (
+            <div className="px-6 py-8 text-center text-gray-500">
+              Chargement de vos dossiers...
+            </div>
+          )}
+          
+          {error && (
+            <div className="px-6 py-8 text-center text-red-500">
+              {error}
+            </div>
+          )}
+          
+          {!isLoading && !error && myRequests.length === 0 && (
+            <div className="px-6 py-8 text-center text-gray-500">
+              Vous n&apos;avez aucun dossier déposé
+            </div>
+          )}
+          
+          {!isLoading && !error && myRequests.map((request) => {
+            const statusDisplay = getStatusDisplay(request.status);
             
             return (
               <div 
-                key={idx} 
+                key={request.id} 
                 className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4"
               >
-                <span 
-                  className="font-montserrat flex-1"
-                  style={{
-                    fontWeight: 500,
-                    fontSize: '18px',
-                    lineHeight: '24px',
-                    color: '#1E1E1E'
-                  }}
-                >
-                  {item.title}
-                </span>
+                <div className="flex-1">
+                  <span 
+                    className="font-montserrat block"
+                    style={{
+                      fontWeight: 500,
+                      fontSize: '18px',
+                      lineHeight: '24px',
+                      color: '#1E1E1E'
+                    }}
+                  >
+                    {request.service.name}
+                  </span>
+                  <span className="text-sm text-gray-500 mt-1 block">
+                    Soumis le {formatDate(request.submitted_at)}
+                  </span>
+                  {request.rejection_comment && (
+                    <span className="text-sm text-red-600 mt-1 block">
+                      Motif: {request.rejection_comment}
+                    </span>
+                  )}
+                </div>
                 <span
                   className="px-5 py-2 font-montserrat font-semibold text-sm sm:text-base"
                   style={{ 
-                    background: bg, 
+                    background: statusDisplay.bg, 
                     borderRadius: 40, 
-                    color, 
+                    color: statusDisplay.color, 
                     minWidth: 100, 
                     textAlign: 'center' 
                   }}
                 >
-                  {item.status}
+                  {statusDisplay.label}
                 </span>
               </div>
             );
@@ -153,9 +212,9 @@ export default function DepotDossierTab() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          setSelectedTitle("");
+          setSelectedService(null);
         }}
-        title={selectedTitle}
+        service={selectedService}
       />
     </div>
   );

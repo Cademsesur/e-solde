@@ -20,7 +20,16 @@ interface BulletinsTabProps {
 
 export default function BulletinsTab({ handleApercu, handleTelecharger, bulletins }: BulletinsTabProps) {
   const [showAll, setShowAll] = useState(false);
+
   const bulletinsToShow = showAll ? bulletins : bulletins.slice(0, 5);
+
+  if (bulletins.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 font-montserrat">Aucun bulletin trouvé</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -74,25 +83,27 @@ export default function BulletinsTab({ handleApercu, handleTelecharger, bulletin
           </div>
         </div>
       ))}
-      <div className="flex justify-start mt-4 sm:mt-6">
-        {!showAll ? (
-          <button 
-            onClick={() => setShowAll(true)}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ backgroundColor: '#047236' }}
-          >
-            Tout voir
-          </button>
-        ) : (
-          <button 
-            onClick={() => setShowAll(false)}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ backgroundColor: '#047236' }}
-          >
-            Réduire
-          </button>
-        )}
-      </div>
+      {bulletins.length > 5 && (
+        <div className="flex justify-start mt-4 sm:mt-6">
+          {!showAll ? (
+            <button 
+              onClick={() => setShowAll(true)}
+              className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
+              style={{ backgroundColor: '#047236' }}
+            >
+              Tout voir ({bulletins.length} bulletins)
+            </button>
+          ) : (
+            <button 
+              onClick={() => setShowAll(false)}
+              className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
+              style={{ backgroundColor: '#047236' }}
+            >
+              Réduire
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -40,16 +40,14 @@ export default function RegisterOTPStep({ registerToken, onSuccess, onBack }: Re
       </FormTitle>
       <FormSectionTitle>Inscription</FormSectionTitle>
 
-       <p className="text-sm sm:text-base font-montserrat text-center mb-6 text-[#343D48]">
-        E-sold
-      </p>
-
-      <Stepper currentStep={3} />
+      <div className="mb-6">
+        <Stepper currentStep={3} />
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="otpCode" className="block font-montserrat font-semibold text-sm mb-1.5 text-[#343D48]">
-            Code OTP
+             Veuillez renseigner le code OTP envoyé sur le numéro de téléphone que vous avez saisi
           </label>
           <input
             type="text"
@@ -64,7 +62,7 @@ export default function RegisterOTPStep({ registerToken, onSuccess, onBack }: Re
 
         <div className="text-center space-y-1">
           <p className="text-xs font-montserrat text-[#343D48]">
-            Pas reçu le code?{' '}
+            Vous n&apos;avez pas reçu le code OTP ? {' '}
             <button 
               type="button"
               onClick={handleResendOtp}
@@ -74,7 +72,7 @@ export default function RegisterOTPStep({ registerToken, onSuccess, onBack }: Re
             </button>
           </p>
           <p className="text-[11px] font-montserrat text-[#888] italic">
-            Expire après 3 minutes
+            Le code envoyé par SMS expire après 3 minutes
           </p>
         </div>
 
@@ -91,7 +89,7 @@ export default function RegisterOTPStep({ registerToken, onSuccess, onBack }: Re
           
           <button
             type="submit"
-            className="px-7 h-[42px] bg-[#0F2137] text-white rounded-lg font-montserrat font-semibold text-sm hover:bg-[#0F2137]/90 transition-colors cursor-pointer"
+            className="px-7 h-[42px] bg-[#047236] text-white rounded-lg font-montserrat font-semibold text-sm hover:bg-[#047236]/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
           >
             {isLoading ? "Vérification..." : "Valider"}

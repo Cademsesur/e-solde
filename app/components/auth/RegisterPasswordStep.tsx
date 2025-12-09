@@ -8,19 +8,19 @@ import { FormButton } from "@/app/components/ui/FormButton";
 import { FormTitle } from "@/app/components/ui/FormTitle";
 import { FormSectionTitle } from "@/app/components/ui/FormSectionTitle";
 import { ErrorMessage } from "@/app/components/ui/ErrorMessage";
-import { ChevronLeft } from "lucide-react";
+import SuccessModal from "./SuccessModal";
 
 interface RegisterPasswordStepProps {
   registerToken: string;
   onSuccess: () => void;
-  onBack: () => void;
 }
 
-export default function RegisterPasswordStep({ registerToken, onSuccess, onBack }: RegisterPasswordStepProps) {
+export default function RegisterPasswordStep({ registerToken, onSuccess }: RegisterPasswordStepProps) {
   const { setPassword, isLoading, error } = useAuth();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +40,13 @@ export default function RegisterPasswordStep({ registerToken, onSuccess, onBack 
     );
 
     if (success) {
-      alert(`Inscription complétée avec succès !\n\nVotre compte a été créé.`);
-      onSuccess();
+      setShowSuccessModal(true);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
+    onSuccess();
   };
 
   return (
@@ -53,11 +57,9 @@ export default function RegisterPasswordStep({ registerToken, onSuccess, onBack 
       </FormTitle>
       <FormSectionTitle>Inscription</FormSectionTitle>
 
-       <p className="text-sm sm:text-base font-montserrat text-center mb-6 text-[#343D48]">
-        E-sold
-      </p>
-
-      <Stepper currentStep={4} />
+      <div className="mb-6">
+        <Stepper currentStep={4} />
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <FormInput
@@ -82,25 +84,24 @@ export default function RegisterPasswordStep({ registerToken, onSuccess, onBack 
 
         <ErrorMessage message={localError || error} />
 
-        <div className="flex items-center justify-between pt-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="flex items-center justify-center w-10 h-10 rounded-md bg-[#0F21370D] text-[#0F2137] hover:bg-[#0F213715] transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="w-5 h-5" strokeWidth={2} />
-          </button>
-          
+        <div className="flex items-center justify-end pt-3">
           <FormButton 
             type="submit" 
             isLoading={isLoading}
             loadingText="Création..."
-            className="px-7 h-[42px] bg-[#0F2137] text-white rounded-lg font-montserrat font-semibold text-sm hover:bg-[#0F2137]/90 transition-colors cursor-pointer"
+            className="px-7 h-[42px] bg-[#047236] text-white rounded-lg font-montserrat font-semibold text-sm hover:bg-[#047236]/90 transition-colors cursor-pointer"
           >
             Valider
           </FormButton>
         </div>
       </form>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseModal}
+        title="Compte créé avec succès !"
+        message="Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter avec vos identifiants."
+      />
     </>
   );
 }

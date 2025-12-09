@@ -36,6 +36,8 @@ class AuthService {
    * Inscription d'un nouvel utilisateur
    */
   async register(registerData: RegisterData): Promise<AuthResponse> {
+    console.log('📤 Sending registration data:', registerData);
+    
     const response = await fetch(API_ENDPOINTS.REGISTER, {
       method: "POST",
       headers: {
@@ -45,10 +47,55 @@ class AuthService {
     });
 
     const data = await response.json();
+    
+    console.log('📥 Registration response:', { 
+      status: response.status, 
+      statusText: response.statusText,
+      data 
+    });
+    
+    // Log de toute la structure de données pour debugging
+    console.log('📋 Response data structure:', JSON.stringify(data, null, 2));
 
     if (!response.ok) {
+      // Log des erreurs de validation détaillées
+      if (data.errors) {
+        console.error('❌ Validation errors:', data.errors);
+        console.table(data.errors);
+        
+        // Formatter les erreurs de validation
+        const errorMessages = Object.entries(data.errors)
+          .map(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              return `${field}: ${messages.join(', ')}`;
+            }
+            return `${field}: ${messages}`;
+          })
+          .join('\n');
+        throw new Error(errorMessages || 'Erreurs de validation');
+      }
+      
+      if (data.message) {
+        console.error('❌ Error message:', data.message);
+      }
+      
+      if (data.detail) {
+        console.error('❌ Error detail:', data.detail);
+      }
+      
+      // Log de toute la réponse d'erreur pour debugging
+      console.error('❌ Full error response:', JSON.stringify(data, null, 2));
+      
       const errorMessage = data.message || data.detail || "Erreur lors de la création du compte";
       throw new Error(errorMessage);
+    }
+
+    // Log pour vérifier si l'OTP a été envoyé
+    if (data.message) {
+      console.log('✅ API Message:', data.message);
+    }
+    if (data.data) {
+      console.log('✅ API Data:', data.data);
     }
 
     return data;

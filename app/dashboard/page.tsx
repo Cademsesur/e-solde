@@ -7,11 +7,12 @@ import { TabCard } from "@/app/components/ui/TabCard";
 import { SearchBar } from "@/app/components/ui/SearchBar";
 import BulletinsTab from "@/app/components/dashboard/BulletinsTab";
 import MesActionsTab from "@/app/components/dashboard/MesActionsTab";
-import DemarchesTab from "@/app/components/dashboard/DemarchesTab";
+import GuidesTab from "@/app/components/dashboard/GuidesTab";
 import DepotDossierTab from "@/app/components/dashboard/DepotDossierTab";
 import PDFPreviewModal from "@/app/components/dashboard/PDFPreviewModal";
-import { STATIC_BULLETINS, STATIC_ACTIONS, STATIC_DEMARCHES } from "@/app/constants/static-data";
+import { STATIC_BULLETINS, STATIC_ACTIONS } from "@/app/constants/static-data";
 import { getPDFPath, downloadLocalFile } from "@/app/lib/utils/document.utils";
+import { useGuides } from "@/app/lib/hooks";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +20,16 @@ export default function Dashboard() {
   const [filter, setFilter] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
+
+  // Récupérer les guides depuis l'API
+  const { guides, loading: guidesLoading, error: guidesError } = useGuides();
+
+  // Fonction pour changer d'onglet et réinitialiser la recherche
+  const handleTabChange = (index: number) => {
+    setActiveTab(index);
+    setSearch("");
+    setFilter("");
+  };
 
   const tabs = [
     {
@@ -55,20 +66,60 @@ export default function Dashboard() {
 
   // Filtrage des données selon l'onglet actif
   const filteredBulletins = activeTab === 0 
-    ? STATIC_BULLETINS.filter(b => 
-        b.title.toLowerCase().includes(search.toLowerCase()) ||
-        b.period?.toLowerCase().includes(search.toLowerCase()) ||
-        b.net?.toLowerCase().includes(search.toLowerCase())
-      )
+    ? STATIC_BULLETINS.filter(b => {
+        // Filtre de recherche
+        const matchesSearch = b.title.toLowerCase().includes(search.toLowerCase()) ||
+          b.period?.toLowerCase().includes(search.toLowerCase()) ||
+          b.net?.toLowerCase().includes(search.toLowerCase());
+        
+        if (!matchesSearch) return false;
+        
+        // Filtre par mois/année
+        if (!filter || filter === "") return true;
+        
+        if (filter === "mois") {
+          if (!b.issued_at) return false;
+          const date = new Date(b.issued_at);
+          const currentMonth = new Date().getMonth();
+          const currentYear = new Date().getFullYear();
+          return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+        } else if (filter === "annee") {
+          if (!b.issued_at) return false;
+          const date = new Date(b.issued_at);
+          const currentYear = new Date().getFullYear();
+          return date.getFullYear() === currentYear;
+        }
+        
+        return true;
+      })
     : [];
 
   const filteredActions = activeTab === 3 
-    ? STATIC_ACTIONS.filter(a => a.title.toLowerCase().includes(search.toLowerCase()))
+    ? STATIC_ACTIONS.filter(a => {
+        // Filtre de recherche
+        const matchesSearch = a.title.toLowerCase().includes(search.toLowerCase());
+        
+        if (!matchesSearch) return false;
+        
+        // Filtre par mois/année
+        if (!filter || filter === "") return true;
+        
+        if (filter === "mois") {
+          const date = new Date(a.date);
+          const currentMonth = new Date().getMonth();
+          const currentYear = new Date().getFullYear();
+          return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+        } else if (filter === "annee") {
+          const date = new Date(a.date);
+          const currentYear = new Date().getFullYear();
+          return date.getFullYear() === currentYear;
+        }
+        
+        return true;
+      })
     : [];
 
-  const filteredDemarches = activeTab === 1 
-    ? STATIC_DEMARCHES.filter(d => d.title.toLowerCase().includes(search.toLowerCase()))
-    : [];
+  // Pour les guides, le filtrage est géré dans le composant GuidesTab
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,7 +134,7 @@ export default function Dashboard() {
                 key={index}
                 tab={tab}
                 isActive={activeTab === index}
-                onClick={() => setActiveTab(index)}
+                onClick={() => handleTabChange(index)}
               />
             ))}
           </div>
@@ -110,10 +161,11 @@ export default function Dashboard() {
           )}
 
           {activeTab === 1 && (
-            <DemarchesTab 
-              handleTelecharger={handleTelecharger} 
-              demarches={filteredDemarches} 
-              search={search} 
+            <GuidesTab 
+              guides={guides}
+              search={search}
+              loading={guidesLoading}
+              error={guidesError}
             />
           )}
 
@@ -122,7 +174,7 @@ export default function Dashboard() {
           {activeTab === 3 && (
             <MesActionsTab 
               handleTelecharger={handleTelecharger} 
-              actions={filteredActions} 
+              actions={filteredActions}
             />
           )}
         </div>

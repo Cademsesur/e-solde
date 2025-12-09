@@ -6,6 +6,7 @@ import { Header } from "@/app/components/ui/Header";
 import LoginForm from "./auth/LoginForm";
 import RegisterNIUStep from "./auth/RegisterNIUStep";
 import RegisterInfoStep from "./auth/RegisterInfoStep";
+import RegisterMatriculeInfoStep, { type ManualRegistrationData } from "./auth/RegisterMatriculeInfoStep";
 import RegisterOTPStep from "./auth/RegisterOTPStep";
 import RegisterPasswordStep from "./auth/RegisterPasswordStep";
 import type { EmployeeData } from "@/app/types";
@@ -14,27 +15,45 @@ export default function Hero() {
   const [showInscription, setShowInscription] = useState(false);
   const [inscriptionStep, setInscriptionStep] = useState(1);
   const [employee, setEmployee] = useState<EmployeeData | null>(null);
+  const [matricule, setMatricule] = useState<string | null>(null);
+  const [manualData, setManualData] = useState<ManualRegistrationData | null>(null);
   const [registerToken, setRegisterToken] = useState<string | null>(null);
+  const [isMatriculeMode, setIsMatriculeMode] = useState(false);
 
   const resetInscription = () => {
     setShowInscription(false);
     setInscriptionStep(1);
     setEmployee(null);
+    setMatricule(null);
+    setManualData(null);
     setRegisterToken(null);
+    setIsMatriculeMode(false);
   };
 
   const handleEmployeeFound = (employeeData: EmployeeData) => {
     setEmployee(employeeData);
+    setIsMatriculeMode(false);
     setInscriptionStep(2);
+  };
+
+  const handleMatriculeEntered = (matriculeValue: string) => {
+    setMatricule(matriculeValue);
+    setIsMatriculeMode(true);
+    setInscriptionStep(2);
+  };
+
+  const handleManualDataSubmit = (data: ManualRegistrationData) => {
+    setManualData(data);
+    setInscriptionStep(3);
   };
 
   const handleRegistrationSuccess = (token: string) => {
     setRegisterToken(token);
-    setInscriptionStep(3);
+    setInscriptionStep(isMatriculeMode ? 4 : 3);
   };
 
   const handleOTPSuccess = () => {
-    setInscriptionStep(4);
+    setInscriptionStep(isMatriculeMode ? 5 : 4);
   };
 
   const handlePasswordSuccess = () => {
@@ -82,25 +101,59 @@ export default function Hero() {
                 ) : inscriptionStep === 1 ? (
                   <RegisterNIUStep 
                     onSuccess={handleEmployeeFound}
+                    onMatriculeSuccess={handleMatriculeEntered}
                     onBack={resetInscription}
                   />
-                ) : inscriptionStep === 2 && employee ? (
+                ) : inscriptionStep === 2 && !isMatriculeMode && employee ? (
                   <RegisterInfoStep
                     employee={employee}
                     onSuccess={handleRegistrationSuccess}
+                  />
+                ) : inscriptionStep === 2 && isMatriculeMode && matricule ? (
+                  <RegisterMatriculeInfoStep
+                    matricule={matricule}
+                    onSuccess={handleManualDataSubmit}
                     onBack={() => setInscriptionStep(1)}
                   />
-                ) : inscriptionStep === 3 && registerToken ? (
+                ) : inscriptionStep === 3 && isMatriculeMode && manualData ? (
+                  <RegisterInfoStep
+                    employee={{
+                      id: 0,
+                      niu: '',
+                      matricule: manualData.matricule,
+                      first_name: manualData.first_name,
+                      last_name: manualData.last_name,
+                      sex: '',
+                      date_of_birth: manualData.date_of_birth,
+                      place_of_birth: manualData.place_of_birth,
+                      email: manualData.email,
+                      phone: manualData.phone,
+                      status: '',
+                      org: { code: '', name: '' }
+                    }}
+                    onSuccess={handleRegistrationSuccess}
+                  />
+                ) : inscriptionStep === 3 && !isMatriculeMode && registerToken ? (
                   <RegisterOTPStep
                     registerToken={registerToken}
                     onSuccess={handleOTPSuccess}
                     onBack={() => setInscriptionStep(2)}
                   />
-                ) : inscriptionStep === 4 && registerToken ? (
+                ) : inscriptionStep === 4 && isMatriculeMode && registerToken ? (
+                  <RegisterOTPStep
+                    registerToken={registerToken}
+                    onSuccess={handleOTPSuccess}
+                    onBack={() => setInscriptionStep(3)}
+                  />
+                ) : inscriptionStep === 4 && !isMatriculeMode && registerToken ? (
                   <RegisterPasswordStep
                     registerToken={registerToken}
                     onSuccess={handlePasswordSuccess}
-                    onBack={() => setInscriptionStep(3)}
+                  />
+                ) : inscriptionStep === 5 && isMatriculeMode && registerToken ? (
+                  <RegisterPasswordStep
+                    registerToken={registerToken}
+                    onSuccess={handlePasswordSuccess}
                   />
                 ) : null}
               </div>
@@ -146,25 +199,59 @@ export default function Hero() {
                 ) : inscriptionStep === 1 ? (
                   <RegisterNIUStep 
                     onSuccess={handleEmployeeFound}
+                    onMatriculeSuccess={handleMatriculeEntered}
                     onBack={resetInscription}
                   />
-                ) : inscriptionStep === 2 && employee ? (
+                ) : inscriptionStep === 2 && !isMatriculeMode && employee ? (
                   <RegisterInfoStep
                     employee={employee}
                     onSuccess={handleRegistrationSuccess}
+                  />
+                ) : inscriptionStep === 2 && isMatriculeMode && matricule ? (
+                  <RegisterMatriculeInfoStep
+                    matricule={matricule}
+                    onSuccess={handleManualDataSubmit}
                     onBack={() => setInscriptionStep(1)}
                   />
-                ) : inscriptionStep === 3 && registerToken ? (
+                ) : inscriptionStep === 3 && isMatriculeMode && manualData ? (
+                  <RegisterInfoStep
+                    employee={{
+                      id: 0,
+                      niu: '',
+                      matricule: manualData.matricule,
+                      first_name: manualData.first_name,
+                      last_name: manualData.last_name,
+                      sex: '',
+                      date_of_birth: manualData.date_of_birth,
+                      place_of_birth: manualData.place_of_birth,
+                      email: manualData.email,
+                      phone: manualData.phone,
+                      status: '',
+                      org: { code: '', name: '' }
+                    }}
+                    onSuccess={handleRegistrationSuccess}
+                  />
+                ) : inscriptionStep === 3 && !isMatriculeMode && registerToken ? (
                   <RegisterOTPStep
                     registerToken={registerToken}
                     onSuccess={handleOTPSuccess}
                     onBack={() => setInscriptionStep(2)}
                   />
-                ) : inscriptionStep === 4 && registerToken ? (
+                ) : inscriptionStep === 4 && isMatriculeMode && registerToken ? (
+                  <RegisterOTPStep
+                    registerToken={registerToken}
+                    onSuccess={handleOTPSuccess}
+                    onBack={() => setInscriptionStep(3)}
+                  />
+                ) : inscriptionStep === 4 && !isMatriculeMode && registerToken ? (
                   <RegisterPasswordStep
                     registerToken={registerToken}
                     onSuccess={handlePasswordSuccess}
-                    onBack={() => setInscriptionStep(3)}
+                  />
+                ) : inscriptionStep === 5 && isMatriculeMode && registerToken ? (
+                  <RegisterPasswordStep
+                    registerToken={registerToken}
+                    onSuccess={handlePasswordSuccess}
                   />
                 ) : null}
               </div>

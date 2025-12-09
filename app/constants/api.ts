@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
   REGISTER: process.env.NEXT_PUBLIC_API_REGISTER_URL!,
   VERIFY_2FA: process.env.NEXT_PUBLIC_API_VERIFY_2FA_URL!,
   SET_PASSWORD: process.env.NEXT_PUBLIC_API_SET_PASSWORD_URL!,
+  SERVICES: process.env.NEXT_PUBLIC_API_SERVICES_URL!,
 } as const;
 
 export const API_TOKENS = {
