@@ -18,10 +18,10 @@ export default function Footer() {
           
           {/* Liens centrés - masqués sur mobile */}
           <div className="absolute left-0 right-0 hidden lg:flex justify-center gap-10 xl:gap-12 pointer-events-none">
-            <a href="#" className="pointer-events-auto text-[#0F2137] text-base xl:text-lg hover:text-[#0F2137]/80 font-open-sans font-medium transition-colors">
+            <a href="#" className="pointer-events-auto text-[#047236] text-base xl:text-lg hover:text-[#047236]/80 font-open-sans font-medium transition-colors">
               Se connecter
             </a>
-            <a href="#" className="pointer-events-auto text-[#0F2137] text-base xl:text-lg hover:text-[#0F2137]/80 font-open-sans font-medium transition-colors">
+            <a href="#" className="pointer-events-auto text-[#047236] text-base xl:text-lg hover:text-[#047236]/80 font-open-sans font-medium transition-colors">
               Contactez-nous
             </a>
           </div>
@@ -38,10 +38,10 @@ export default function Footer() {
 
         {/* Liens visibles sur mobile */}
         <div className="flex lg:hidden justify-center gap-6 sm:gap-8 py-4 sm:py-5 border-b border-gray-200">
-          <a href="#" className="text-[#0F2137] text-sm sm:text-base hover:text-[#0F2137]/80 font-open-sans font-medium transition-colors">
+          <a href="#" className="text-[#047236] text-sm sm:text-base hover:text-[#047236]/80 font-open-sans font-medium transition-colors">
             Se connecter
           </a>
-          <a href="#" className="text-[#0F2137] text-sm sm:text-base hover:text-[#0F2137]/80 font-open-sans font-medium transition-colors">
+          <a href="#" className="text-[#047236] text-sm sm:text-base hover:text-[#047236]/80 font-open-sans font-medium transition-colors">
             Contactez-nous
           </a>
         </div>
@@ -50,15 +50,15 @@ export default function Footer() {
           {/* Ligne 2 - Contacts */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 md:gap-8 lg:gap-10 text-[#343D48] text-sm lg:text-base font-open-sans">
             <span className="flex items-center gap-2">
-              <Mail className="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-[#0F2137]" /> 
+              <Mail className="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-[#047236]" /> 
               <span>bulletin.cg</span>
             </span>
             <span className="flex items-center gap-2">
-              <Phone className="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-[#0F2137]" /> 
+              <Phone className="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-[#047236]" /> 
               <span>+242 0699934662</span>
             </span>
             <span className="flex items-center gap-2">
-              <Link2 className="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-[#0F2137]" /> 
+              <Link2 className="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-[#047236]" /> 
               <span>www.tax.cg</span>
             </span>
           </div>
@@ -67,28 +67,28 @@ export default function Footer() {
           <div className="flex justify-center items-center gap-2.5">
             <a 
               href="#" 
-              className="flex items-center justify-center rounded-full bg-[#0F2137] w-9 h-9 hover:bg-[#0F2137]/90 transition-all hover:scale-105"
+              className="flex items-center justify-center rounded-full bg-[#047236] w-9 h-9 hover:bg-[#047236]/90 transition-all hover:scale-105"
               aria-label="Facebook"
             >
               <Facebook className="w-4 h-4 text-white" />
             </a>
             <a 
               href="#" 
-              className="flex items-center justify-center rounded-full bg-[#0F2137] w-9 h-9 hover:bg-[#0F2137]/90 transition-all hover:scale-105"
+              className="flex items-center justify-center rounded-full bg-[#047236] w-9 h-9 hover:bg-[#047236]/90 transition-all hover:scale-105"
               aria-label="Twitter"
             >
               <Twitter className="w-4 h-4 text-white" />
             </a>
             <a 
               href="#" 
-              className="flex items-center justify-center rounded-full bg-[#0F2137] w-9 h-9 hover:bg-[#0F2137]/90 transition-all hover:scale-105"
+              className="flex items-center justify-center rounded-full bg-[#047236] w-9 h-9 hover:bg-[#047236]/90 transition-all hover:scale-105"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-4 h-4 text-white" />
             </a>
             <a 
               href="#" 
-              className="flex items-center justify-center rounded-full bg-[#0F2137] w-9 h-9 hover:bg-[#0F2137]/90 transition-all hover:scale-105"
+              className="flex items-center justify-center rounded-full bg-[#047236] w-9 h-9 hover:bg-[#047236]/90 transition-all hover:scale-105"
               aria-label="YouTube"
             >
               <Youtube className="w-4 h-4 text-white" />

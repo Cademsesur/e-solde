@@ -1,0 +1,17 @@
+/**
+ * Configuration des endpoints API
+ */
+
+export const API_ENDPOINTS = {
+  EMPLOYEE: process.env.NEXT_PUBLIC_API_EMPLOYEE_URL!,
+  LOGIN: process.env.NEXT_PUBLIC_API_LOGIN_URL!,
+  PROFILE: process.env.NEXT_PUBLIC_API_PROFILE_URL!,
+  PAYSLIPS: process.env.NEXT_PUBLIC_API_PAYSLIPS_URL!,
+  REGISTER: process.env.NEXT_PUBLIC_API_REGISTER_URL!,
+  VERIFY_2FA: process.env.NEXT_PUBLIC_API_VERIFY_2FA_URL!,
+  SET_PASSWORD: process.env.NEXT_PUBLIC_API_SET_PASSWORD_URL!,
+} as const;
+
+export const API_TOKENS = {
+  EMPLOYEE: process.env.NEXT_PUBLIC_API_EMPLOYEE_TOKEN!,
+} as const;

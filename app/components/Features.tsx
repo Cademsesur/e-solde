@@ -34,16 +34,6 @@ export default function Features() {
 
   return (
     <section className="py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 bg-white relative overflow-hidden">
-      {/* Grille de points décoratifs en haut à gauche */}
-      <div className="absolute top-0 left-0 hidden xl:grid grid-cols-[repeat(15,6px)] grid-rows-[repeat(15,6px)] gap-2" aria-hidden="true">
-        {Array.from({ length: 225 }).map((_, i) => (
-          <div 
-            key={i}
-            className="w-1 h-1 bg-gray-300 rounded-full"
-          />
-        ))}
-      </div>
-
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
         {/* Grille des fonctionnalités */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-x-20 lg:gap-y-16">

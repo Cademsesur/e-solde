@@ -1,792 +1,74 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { API_PAYSLIPS_URL, Payslip, TabCardProps, DocumentCardProps } from "../api/config";
-import { Search, Filter, Eye, Download, FileText, LayoutDashboard, FolderOpen, HandCoins, ChevronRight, ChevronDown } from "lucide-react";
-import DashboardHeader from "./DashboardHeader";
+import { useState } from "react";
+import { FileText, LayoutDashboard, FolderOpen, HandCoins } from "lucide-react";
+import DashboardHeader from "@/app/components/DashboardHeader";
+import { TabCard } from "@/app/components/ui/TabCard";
+import { SearchBar } from "@/app/components/ui/SearchBar";
+import BulletinsTab from "@/app/components/dashboard/BulletinsTab";
+import MesActionsTab from "@/app/components/dashboard/MesActionsTab";
+import DemarchesTab from "@/app/components/dashboard/DemarchesTab";
+import DepotDossierTab from "@/app/components/dashboard/DepotDossierTab";
+import PDFPreviewModal from "@/app/components/dashboard/PDFPreviewModal";
+import { STATIC_BULLETINS, STATIC_ACTIONS, STATIC_DEMARCHES } from "@/app/constants/static-data";
+import { getPDFPath, downloadLocalFile } from "@/app/lib/utils/document.utils";
 
-const TabCard = ({ tab, isActive, onClick }: TabCardProps) => {
-  const Icon = tab.icon;
-  
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-start gap-3 sm:gap-4 p-4 sm:p-6 transition-all duration-300 hover:scale-105 cursor-pointer text-left w-full"
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '10px'
-      }}
-    >
-      <div 
-        className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300"
-        style={{ 
-          backgroundColor: isActive ? '#0F2137' : '#0F21370D'
-        }}
-      >
-        <Icon 
-          className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" 
-          strokeWidth={1.5}
-          style={{ color: isActive ? '#FFFFFF' : '#0F2137' }} 
-        />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <h3 className="text-sm sm:text-base md:text-lg font-bold text-[#0F2137] font-montserrat mb-1 sm:mb-2">
-          {tab.name}
-        </h3>
-        <p className="text-xs sm:text-sm text-[#343D48] font-montserrat leading-relaxed">
-          {tab.description}
-        </p>
-      </div>
-    </button>
-  );
-};
-
-// Composant Search Bar
-const SearchBar = ({ value, onChange, filter, onFilterChange }: { value: string; onChange: (v: string) => void; filter: string; onFilterChange: (v: string) => void; }) => (
-  <div className="flex justify-center mb-6">
-    <div className="max-w-5xl w-full flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
-      <div 
-        className="sm:flex-2 relative flex items-center"
-        style={{
-          backgroundColor: '#F2F2F2',
-          border: '1px solid #F2F2F2',
-          borderRadius: '8px'
-        }}
-      >
-        <Search 
-          className="absolute left-3 sm:left-4 w-4 h-4 sm:w-5 sm:h-5 text-gray-400"
-          strokeWidth={1.5}
-        />
-        <input
-          type="text"
-          placeholder="Rechercher"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          className="w-full py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 bg-transparent text-sm sm:text-base font-montserrat text-[#343D48] placeholder-gray-400 outline-none"
-        />
-      </div>
-      <div 
-        className="sm:flex-1 relative flex items-center gap-2 py-2.5 sm:py-3 px-3 sm:px-4"
-        style={{
-          backgroundColor: '#F2F2F2',
-          border: '1px solid #F2F2F2',
-          borderRadius: '8px'
-        }}
-      >
-        <Filter 
-          className="w-4 h-4 sm:w-5 sm:h-5 text-[#343D48] shrink-0"
-          strokeWidth={1.5}
-        />
-        <select 
-          className="flex-1 bg-transparent text-sm sm:text-base font-montserrat text-[#343D48] font-semibold outline-none cursor-pointer"
-          value={filter}
-          onChange={e => onFilterChange(e.target.value)}
-        >
-          <option value="">Tous</option>
-          <option value="mois">Par mois</option>
-          <option value="annee">Par année</option>
-        </select>
-      </div>
-    </div>
-  </div>
-);
-
-// Composant Document Card (type importé)
-
-const DocumentCard = ({
-  title,
-  onPreview,
-  onDownload,
-  date,
-  showPreview = true,
-}: DocumentCardProps) => (
-  <div 
-    className="w-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4"
-    style={{
-      borderRadius: '10px',
-      backgroundColor: '#FFFFFF'
-    }}
-  >
-    <h3 className="text-sm sm:text-base md:text-lg font-semibold text-[#343D48] font-montserrat flex-1">
-      {title}
-    </h3>
-    <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-      {date && (
-        <p className="text-xs sm:text-sm text-gray-500 font-montserrat whitespace-nowrap">
-          {date}
-        </p>
-      )}
-      {showPreview && onPreview && (
-        <button 
-          onClick={onPreview}
-          className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap" 
-          style={{ color: '#0C5CB4' }}
-        >
-          Aperçu
-          <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-        </button>
-      )}
-      <button 
-        onClick={onDownload}
-        className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap" 
-        style={{ color: '#079748' }}
-      >
-        Télécharger
-        <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-      </button>
-    </div>
-  </div>
-);
-
-// Composant Tab Bulletins de Soldes
-const BulletinsTab = ({ handleApercu, handleTelecharger, bulletins }: { handleApercu: (titre: string) => void; handleTelecharger: (titre: string) => void; bulletins: { title: string; id: string; period?: string; net?: string; issued_at?: string; currency?: string; }[] }) => {
-  const [showAll, setShowAll] = useState(false);
-  const bulletinsToShow = showAll ? bulletins : bulletins.slice(0, 5);
-  return (
-    <div className="space-y-3 sm:space-y-4">
-      {bulletinsToShow.map((bulletin) => (
-        <div key={bulletin.id} className="w-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-[10px] bg-white border border-gray-100">
-          <div className="flex-1 min-w-0">
-            <div className="font-montserrat font-semibold text-[#0F2137] text-base sm:text-lg mb-1">{bulletin.title}</div>
-            <div className="flex flex-wrap gap-3 text-xs sm:text-sm text-[#343D48] font-montserrat">
-              {bulletin.period && <span>Période : {bulletin.period}</span>}
-              {bulletin.issued_at && <span>Émis le : {new Date(bulletin.issued_at).toLocaleDateString()}</span>}
-              {bulletin.net && <span>Net à payer : <span className="font-bold text-green-700">{bulletin.net} {bulletin.currency || 'XAF'}</span></span>}
-            </div>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-            <button 
-              onClick={() => handleApercu(bulletin.title)}
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap" 
-              style={{ color: '#0C5CB4' }}
-            >
-              Aperçu
-              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-            </button>
-            <button 
-              onClick={() => handleTelecharger(bulletin.title)}
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap" 
-              style={{ color: '#079748' }}
-            >
-              Télécharger
-              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
-      ))}
-      <div className="flex justify-start mt-4 sm:mt-6">
-        {!showAll ? (
-          <button 
-            onClick={() => setShowAll(true)}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ backgroundColor: '#0F2137' }}
-          >
-            Tout voir
-          </button>
-        ) : (
-          <button 
-            onClick={() => setShowAll(false)}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ backgroundColor: '#0F2137' }}
-          >
-            Réduire
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Composant Tab Mes Actions
-type MesActionsTabProps = {
-  handleTelecharger: (titre: string) => void;
-  actions: { title: string; date: string; id: string }[];
-};
-
-const MesActionsTab = ({ handleTelecharger, actions }: MesActionsTabProps) => {
-  return (
-    <div className="space-y-3 sm:space-y-4">
-      {actions.map((action) => (
-        <DocumentCard
-          key={action.id}
-          title={action.title}
-          date={action.date}
-          onDownload={() => handleTelecharger(action.title)}
-          showPreview={false}
-        />
-      ))}
-    </div>
-  );
-};
-
-// DemarchesTab avec dropdowns pour sous-sections
-const DemarchesTab = ({
-  handleTelecharger,
-  demarches: demarchesProp,
-  search
-}: {
-  handleTelecharger: (titre: string) => void;
-  demarches: { title: string; id: string }[];
-  search: string;
-}) => {
-  const [open, setOpen] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
-  // Types pour les sous-items
-  interface Demarche {
-    title: string;
-    id: string;
-  }
-  const rappels: string[] = React.useMemo(() => [
-    "Rappels d’activités",
-    "Rappels d’allocations Familiales",
-    "Rappel de promotion",
-    "Rappel d’avancement",
-    "Rappel de promotion sur liste d’aptitude",
-    "Rappel de reclassement (Rappel de reconstitution de carrière)",
-    "Rappel de révision de situation administrative",
-    "Rappel de titularisation",
-    "Rappel de reversement",
-    "Rappel de remboursement",
-    "Rappel de remboursement IRPP.",
-    "Rappel de réalignement ou suspension",
-    "Rappel Radiation",
-    "Rappel de levée de mesure",
-    "Rappel agent code 90 réhabilité",
-    "Rappel disponibilité",
-    "Rappel retraite (Indemnité de Fin de Carrière)",
-    "Rappel retraite (Congé payé)",
-    "Rappel décès (Capital décès)",
-    "Rappel décès (Congé payé).",
-    "Rappel de nomination",
-    "Rappel de congé diplomatique",
-    "Rappel de mise équipement",
-    "Rappel de congé de rapatriement",
-    "Rappel indemnité de représentation.",
-    "Rappel indemnités et primes",
-    "Rappel de mise équipement",
-    "Rappel d’affectation (civils)",
-    "Rappel d’indemnité de logement"
-  ], []);
-  const allocations: string[] = React.useMemo(() => ["Demande d'allocations familiales"], []);
-  const matrimoniales: string[] = React.useMemo(() => ["Déclaration de situation matrimoniale"], []);
-
-  // Détecte si la recherche correspond à un sous-item et ouvre le dropdown automatiquement
-  React.useEffect(() => {
-    if (search) {
-      if (rappels.some(sous => sous.toLowerCase().includes(search.toLowerCase()))) {
-        setOpen("rappels");
-      } else if (allocations.some(sous => sous.toLowerCase().includes(search.toLowerCase()))) {
-        setOpen("alloc");
-      } else if (matrimoniales.some(sous => sous.toLowerCase().includes(search.toLowerCase()))) {
-        setOpen("matrimonial");
-      }
-    }
-  }, [search, rappels, allocations, matrimoniales]);
-
-  // Filtrage des sous-items selon la recherche
-  const filterSousItems = (items: string[]) => {
-    if (!search) return items;
-    return items.filter(sous => sous.toLowerCase().includes(search.toLowerCase()));
-  };
-
-  // Fonction pour filtrer les démarches selon la recherche
-  function filterDemarches(demarches: { title: string; id: string }[], search: string) {
-    if (!search) return demarches;
-    return demarches.filter(demarche =>
-      demarche.title.toLowerCase().includes(search.toLowerCase())
-    );
-  }
-
-  const filteredDemarches = filterDemarches(demarchesProp, search);
-  const demarchesToShow = showAll ? filteredDemarches : filteredDemarches.slice(0, 5);
-  return (
-    <>
-      <div className="space-y-3 sm:space-y-4">
-        {demarchesToShow.map((demarche: Demarche) => {
-          if (demarche.title === "Rappels") {
-            const sousRappels = filterSousItems(rappels);
-            return (
-              <div key={demarche.id} className="w-full p-4 sm:p-6 flex flex-col rounded-[10px] bg-white">
-                <button
-                  className="flex items-center justify-between w-full font-montserrat text-base sm:text-lg font-bold text-[#0F2137] focus:outline-none mb-2"
-                  onClick={() => setOpen(open === demarche.id ? null : demarche.id)}
-                  style={{ minHeight: 48 }}
-                >
-                  <span>{demarche.title}</span>
-                  {open === demarche.id ? (
-                    <ChevronDown className="w-5 h-5 text-[#0F2137] transition-transform" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-[#0F2137] transition-transform" />
-                  )}
-                </button>
-                {open === demarche.id && (
-                  <div className="pt-2">
-                    <ul className="space-y-3 sm:space-y-4">
-                      {sousRappels.map((sous, idx) => (
-                        <li key={idx} className="w-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-[10px] bg-white">
-                          <span className="text-sm sm:text-base text-[#343D48] font-montserrat flex-1">{sous}</span>
-                          <button
-                            onClick={() => handleTelecharger(sous)}
-                            className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap"
-                            style={{ color: '#079748' }}
-                          >
-                            Télécharger
-                            <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            );
-          }
-          if (demarche.title === "Allocations familiales") {
-            const sousAlloc = filterSousItems(allocations);
-            return (
-              <div key={demarche.id} className="w-full p-4 sm:p-6 flex flex-col rounded-[10px] bg-white">
-                <button
-                  className="flex items-center justify-between w-full font-montserrat text-base sm:text-lg font-bold text-[#0F2137] focus:outline-none mb-2"
-                  onClick={() => setOpen(open === demarche.id ? null : demarche.id)}
-                  style={{ minHeight: 48 }}
-                >
-                  <span>{demarche.title}</span>
-                  {open === demarche.id ? (
-                    <ChevronDown className="w-5 h-5 text-[#0F2137] transition-transform" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-[#0F2137] transition-transform" />
-                  )}
-                </button>
-                {open === demarche.id && (
-                  <div className="pt-2">
-                    <ul className="space-y-3 sm:space-y-4">
-                      {sousAlloc.map((sous, idx) => (
-                        <li key={idx} className="w-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-[10px] bg-white">
-                          <span className="text-sm sm:text-base text-[#343D48] font-montserrat flex-1">{sous}</span>
-                          <button
-                            onClick={() => handleTelecharger(sous)}
-                            className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap"
-                            style={{ color: '#079748' }}
-                          >
-                            Télécharger
-                            <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            );
-          }
-          if (demarche.title === "Situations matrimoniales") {
-            const sousMatri = filterSousItems(matrimoniales);
-            return (
-              <div key={demarche.id} className="w-full p-4 sm:p-6 flex flex-col rounded-[10px] bg-white">
-                <button
-                  className="flex items-center justify-between w-full font-montserrat text-base sm:text-lg font-bold text-[#0F2137] focus:outline-none mb-2"
-                  onClick={() => setOpen(open === demarche.id ? null : demarche.id)}
-                  style={{ minHeight: 48 }}
-                >
-                  <span>{demarche.title}</span>
-                  {open === demarche.id ? (
-                    <ChevronDown className="w-5 h-5 text-[#0F2137] transition-transform" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-[#0F2137] transition-transform" />
-                  )}
-                </button>
-                {open === demarche.id && (
-                  <div className="pt-2">
-                    <ul className="space-y-3 sm:space-y-4">
-                      {sousMatri.map((sous, idx) => (
-                        <li key={idx} className="w-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-[10px] bg-white">
-                          <span className="text-sm sm:text-base text-[#343D48] font-montserrat flex-1">{sous}</span>
-                          <button
-                            onClick={() => handleTelecharger(sous)}
-                            className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap"
-                            style={{ color: '#079748' }}
-                          >
-                            Télécharger
-                            <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            );
-          }
-          return (
-            <div key={demarche.id} className="w-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-[10px] bg-white">
-              <span className="text-base sm:text-lg font-bold text-[#0F2137] font-montserrat flex-1">{demarche.title}</span>
-              <button
-                onClick={() => handleTelecharger(demarche.title)}
-                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap"
-                style={{ color: '#079748' }}
-              >
-                Télécharger
-                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      <div className="flex justify-start mt-4 sm:mt-6">
-        {!showAll ? (
-          <button 
-            onClick={() => setShowAll(true)}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ backgroundColor: '#0F2137' }}
-          >
-            Tout voir
-          </button>
-        ) : (
-          <button 
-            onClick={() => setShowAll(false)}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white font-montserrat font-semibold rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ backgroundColor: '#0F2137' }}
-          >
-            Réduire
-          </button>
-        )}
-      </div>
-    </>
-  );
-};
-
-// Composant Dépôt de dossier avec sous-onglets
-const DepotDossierTab = () => {
-  const [subTab, setSubTab] = useState<'deposer' | 'mesdossiers'>('deposer');
-  // Données statiques pour l'exemple
-  const depots = [
-    { title: 'Prestations familiales' },
-    { title: 'Situations matrimoniales' },
-    { title: 'Rappels' },
-    { title: 'Indemnités et primes' },
-  ];
-  const mesDossiers = [
-    { title: 'Prestations familiales', status: 'En cours', color: '#FFD600' },
-    { title: 'Rappels', status: 'Terminé', color: '#079748' },
-    { title: 'Situations matrimoniales', status: 'Terminé', color: '#079748' },
-    { title: 'Indemnités et primes', status: 'Rejeté', color: '#EF1A1A' },
-  ];
-  return (
-    <div>
-      {/* Sous-onglets */}
-      <div className="flex gap-2 mb-6">
-        <div
-          className={`px-5 py-2 font-montserrat font-semibold text-sm sm:text-base cursor-pointer transition-all relative ${subTab === 'deposer' ? 'text-[#0F2137]' : 'text-gray-400'}`}
-          onClick={() => setSubTab('deposer')}
-        >
-          Déposer un dossier
-          {subTab === 'deposer' && (
-            <span className="absolute left-0 right-0 -bottom-0.5 h-1 bg-[#0F2137] rounded-t" />
-          )}
-        </div>
-        <div
-          className={`px-5 py-2 font-montserrat font-semibold text-sm sm:text-base cursor-pointer transition-all relative ${subTab === 'mesdossiers' ? 'text-[#0F2137]' : 'text-gray-400'}`}
-          onClick={() => setSubTab('mesdossiers')}
-        >
-          Mes dossiers
-          {subTab === 'mesdossiers' && (
-            <span className="absolute left-0 right-0 -bottom-0.5 h-1 bg-[#0F2137] rounded-t" />
-          )}
-        </div>
-      </div>
-      {/* Contenu du sous-onglet */}
-      {subTab === 'deposer' && (
-        <div className="bg-white rounded-[10px] p-0">
-          {depots.map((item, idx) => (
-            <div key={idx} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 ${idx !== depots.length - 1 ? '' : ''}`}>
-              <span className="text-base sm:text-lg font-bold text-[#0F2137] font-montserrat flex-1">{item.title}</span>
-              <button
-                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-montserrat font-semibold hover:opacity-80 cursor-pointer whitespace-nowrap px-5 py-2 rounded-lg"
-                onClick={() => alert(`Soumission d'un dossier pour : ${item.title}`)}
-                style={{ color: '#079748', background: 'transparent' }}
-              >
-                Soumettre un dossier
-                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={1.5} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-      {subTab === 'mesdossiers' && (
-        <div className="bg-white rounded-[10px] p-0">
-          {mesDossiers.map((item, idx) => {
-            let bg = '';
-            let color = '';
-            if (item.status === 'En cours') { bg = '#355F9E1A'; color = '#355F9E'; }
-            if (item.status === 'Terminé') { bg = '#E6F5ED'; color = '#079748'; }
-            if (item.status === 'Rejeté') { bg = '#EB34261A'; color = '#EB3426'; }
-            return (
-              <div key={idx} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4`}>
-                <span className="text-base sm:text-lg font-bold text-[#0F2137] font-montserrat flex-1">{item.title}</span>
-                <span
-                  className="px-5 py-2 font-montserrat font-semibold text-sm sm:text-base"
-                  style={{ background: bg, borderRadius: 40, color, minWidth: 100, textAlign: 'center' }}
-                >
-                  {item.status}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Composant Principal Dashboard
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(0);
-  // Barre de recherche et filtre par vue
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
-
-  // Aperçu PDF
   const [showPreview, setShowPreview] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
-
-  const handleApercu = (titre: string) => {
-    setPreviewTitle(titre);
-    setShowPreview(true);
-  };
-
-  // --- Version statique : téléchargement du PDF local ---
-  const handleTelecharger = (titre: string) => {
-    const link = document.createElement('a');
-    link.href = '/assets/billet.pdf';
-    link.download = `${titre.replace(/\s+/g, '_')}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const tabs = [
     {
       icon: FileText,
       name: "Bulletins de soldes",
       description: "Retrouvez vos bulletins de solde",
-      color: "#009543",
-      bgColor: "#E6F5ED66"
     },
     {
       icon: LayoutDashboard,
       name: "Guide",
       description: "Consultez les procédures",
-      color: "#FFD600",
-      bgColor: "#FDEBE966"
     },
     {
       icon: FolderOpen,
       name: "Dépôt de dossier",
       description: "Soumettez vos dossiers",
-      color: "#EF1A1A",
-      bgColor: "#FEFAE766"
     },
     {
       icon: HandCoins,
-      name: "Mes actions",
+      name: "Mes activités",
       description: "Consultez vos actions passées",
-      color: "#355F9E",
-      bgColor: "#E9F1FD66"
     }
   ];
-  
-  /*
-  // --- Intégration API pour récupération des bulletins de solde ---
-  // const [payslips, setPayslips] = useState<Payslip[]>([]);
-  // const [loadingPayslips, setLoadingPayslips] = useState(false);
-  // const [errorPayslips, setErrorPayslips] = useState("");
-  // useEffect(() => {
-  //   if (activeTab !== 0) return;
-  //   const fetchPayslips = async () => {
-  //     setLoadingPayslips(true);
-  //     setErrorPayslips("");
-  //     try {
-  //       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  //       if (!token) throw new Error("Token manquant");
-  //       const res = await fetch(API_PAYSLIPS_URL, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (!res.ok) throw new Error("Erreur lors de la récupération des bulletins");
-  //       const data = await res.json();
-  //       setPayslips(data.data || []);
-  //     } catch (err: unknown) {
-  //       if (err instanceof Error) {
-  //         setErrorPayslips(err.message);
-  //       } else {
-  //         setErrorPayslips("Erreur inconnue");
-  //       }
-  //     } finally {
-  //       setLoadingPayslips(false);
-  //     }
-  //   };
-  //   fetchPayslips();
-  // }, [activeTab]);
-  */
-  let filteredActions: { title: string; date: string; id: string }[] = [];
-  let filteredDemarches: { title: string; id: string }[] = [];
 
-  // --- Tableau statique de bulletins pour la démonstration ---
-  let filteredBulletins: { title: string; id: string; period?: string; net?: string; issued_at?: string }[] = [];
-  if (activeTab === 0) {
-    const allBulletins = [
-      {
-        title: "Bulletin de solde Juin 2025",
-        id: "1",
-        period: "06/2025",
-        net: "250000",
-        issued_at: "2025-07-01",
-      },
-      {
-        title: "Bulletin de solde Mai 2025",
-        id: "2",
-        period: "05/2025",
-        net: "248000",
-        issued_at: "2025-06-01",
-      },
-      {
-        title: "Bulletin de solde Avril 2025",
-        id: "3",
-        period: "04/2025",
-        net: "247500",
-        issued_at: "2025-05-01",
-      },
-      {
-        title: "Bulletin de solde Mars 2025",
-        id: "4",
-        period: "03/2025",
-        net: "246800",
-        issued_at: "2025-04-01",
-      },
-      {
-        title: "Bulletin de solde Février 2025",
-        id: "5",
-        period: "02/2025",
-        net: "245900",
-        issued_at: "2025-03-01",
-      },
-      {
-        title: "Bulletin de solde Janvier 2025",
-        id: "6",
-        period: "01/2025",
-        net: "245000",
-        issued_at: "2025-02-01",
-      },
-      {
-        title: "Bulletin de solde Décembre 2024",
-        id: "7",
-        period: "12/2024",
-        net: "244500",
-        issued_at: "2025-01-01",
-      },
-      {
-        title: "Bulletin de solde Novembre 2024",
-        id: "8",
-        period: "11/2024",
-        net: "244000",
-        issued_at: "2024-12-01",
-      },
-      {
-        title: "Bulletin de solde Octobre 2024",
-        id: "9",
-        period: "10/2024",
-        net: "243500",
-        issued_at: "2024-11-01",
-      },
-      {
-        title: "Bulletin de solde Septembre 2024",
-        id: "10",
-        period: "09/2024",
-        net: "243000",
-        issued_at: "2024-10-01",
-      },
-    ];
-    filteredBulletins = allBulletins.filter(bulletin => {
-      const searchText = search.toLowerCase();
-      return (
-        bulletin.title.toLowerCase().includes(searchText) ||
-        (bulletin.period && bulletin.period.toLowerCase().includes(searchText)) ||
-        (bulletin.net && bulletin.net.toLowerCase().includes(searchText)) ||
-        (bulletin.issued_at && new Date(bulletin.issued_at).toLocaleDateString().toLowerCase().includes(searchText))
-      );
-    });
-  }
-  if (activeTab === 3) {
-    // Filtrage actions
-    const allActions = [
-      { title: "Bulletin de solde du mois de juin 2025", date: "12/12/2025", id: "action1" },
-      { title: "Dépôts de dossier", date: "13/12/2025", id: "action2" },
-      { title: "Bulletin de solde du mois d'octobre 2025", date: "09/12/2025", id: "action3" }
-    ];
-    filteredActions = allActions.filter(a =>
-      a.title.toLowerCase().includes(search.toLowerCase()) &&
-      (filter === "" || a.title.toLowerCase().includes(filter))
-    );
-  }
-  if (activeTab === 1) {
-    // Filtrage démarches
-    const allDemarches = [
-      { title: "Allocations familiales", id: "alloc" },
-      { title: "Rappels", id: "rappels" },
-      { title: "Situations matrimoniales", id: "matrimonial" }
-    ];
-    // Sous-items pour la recherche
-    const rappels = [
-      "Rappels d’activités",
-      "Rappels d’allocations Familiales",
-      "Rappel de promotion",
-      "Rappel d’avancement",
-      "Rappel de promotion sur liste d’aptitude",
-      "Rappel de reclassement (Rappel de reconstitution de carrière)",
-      "Rappel de révision de situation administrative",
-      "Rappel de titularisation",
-      "Rappel de reversement",
-      "Rappel de remboursement",
-      "Rappel de remboursement IRPP.",
-      "Rappel de réalignement ou suspension",
-      "Rappel Radiation",
-      "Rappel de levée de mesure",
-      "Rappel agent code 90 réhabilité",
-      "Rappel disponibilité",
-      "Rappel retraite (Indemnité de Fin de Carrière)",
-      "Rappel retraite (Congé payé)",
-      "Rappel décès (Capital décès)",
-      "Rappel décès (Congé payé).",
-      "Rappel de nomination",
-      "Rappel de congé diplomatique",
-      "Rappel de mise équipement",
-      "Rappel de congé de rapatriement",
-      "Rappel indemnité de représentation.",
-      "Rappel indemnités et primes",
-      "Rappel de mise équipement",
-      "Rappel d’affectation (civils)",
-      "Rappel d’indemnité de logement"
-    ];
-    const allocations = ["Demande d'allocations familiales"];
-    const matrimoniales = ["Déclaration de situation matrimoniale"];
-    filteredDemarches = allDemarches.filter(d => {
-      if (d.title.toLowerCase().includes(search.toLowerCase()) && (filter === "" || d.title.toLowerCase().includes(filter))) {
-        return true;
-      }
-      if (d.title === "Rappels") {
-        return rappels.some(sous => sous.toLowerCase().includes(search.toLowerCase()));
-      }
-      if (d.title === "Allocations familiales") {
-        return allocations.some(sous => sous.toLowerCase().includes(search.toLowerCase()));
-      }
-      if (d.title === "Situations matrimoniales") {
-        return matrimoniales.some(sous => sous.toLowerCase().includes(search.toLowerCase()));
-      }
-      return false;
-    });
-  }
+  const handleApercu = (titre: string) => {
+    setPreviewTitle(titre);
+    setShowPreview(true);
+  };
+
+  const handleTelecharger = (titre: string) => {
+    const file = getPDFPath(titre, activeTab);
+    downloadLocalFile(file, titre);
+  };
+
+  // Filtrage des données selon l'onglet actif
+  const filteredBulletins = activeTab === 0 
+    ? STATIC_BULLETINS.filter(b => 
+        b.title.toLowerCase().includes(search.toLowerCase()) ||
+        b.period?.toLowerCase().includes(search.toLowerCase()) ||
+        b.net?.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
+
+  const filteredActions = activeTab === 3 
+    ? STATIC_ACTIONS.filter(a => a.title.toLowerCase().includes(search.toLowerCase()))
+    : [];
+
+  const filteredDemarches = activeTab === 1 
+    ? STATIC_DEMARCHES.filter(d => d.title.toLowerCase().includes(search.toLowerCase()))
+    : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -809,7 +91,12 @@ export default function Dashboard() {
         
         {/* Barre de recherche */}
         {(activeTab === 0 || activeTab === 1 || activeTab === 3) && (
-          <SearchBar value={search} onChange={setSearch} filter={filter} onFilterChange={setFilter} />
+          <SearchBar 
+            value={search} 
+            onChange={setSearch} 
+            filter={filter} 
+            onFilterChange={setFilter} 
+          />
         )}
 
         {/* Contenu de l'onglet actif */}
@@ -823,43 +110,29 @@ export default function Dashboard() {
           )}
 
           {activeTab === 1 && (
-            <DemarchesTab handleTelecharger={handleTelecharger} demarches={filteredDemarches} search={search} />
+            <DemarchesTab 
+              handleTelecharger={handleTelecharger} 
+              demarches={filteredDemarches} 
+              search={search} 
+            />
           )}
+
+          {activeTab === 2 && <DepotDossierTab />}
 
           {activeTab === 3 && (
-            <MesActionsTab handleTelecharger={handleTelecharger} actions={filteredActions} />
-          )}
-
-          {activeTab === 2 && (
-            <DepotDossierTab />
+            <MesActionsTab 
+              handleTelecharger={handleTelecharger} 
+              actions={filteredActions} 
+            />
           )}
         </div>
 
         {/* Modale d'aperçu PDF */}
-        {showPreview && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col relative">
-              <button
-                className="absolute top-2 right-2 text-gray-600 hover:text-black text-2xl font-bold z-10"
-                onClick={() => setShowPreview(false)}
-                aria-label="Fermer"
-              >
-                ×
-              </button>
-              <div className="p-4 border-b font-montserrat font-semibold text-lg text-[#0F2137]">
-                Aperçu : {previewTitle}
-              </div>
-              <div className="flex-1 overflow-auto flex items-center justify-center bg-gray-100">
-                <iframe
-                  src="/assets/billet.pdf"
-                  title="Aperçu PDF"
-                  className="w-full h-[70vh] rounded-b-lg border-none"
-                  style={{ minHeight: 400 }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        <PDFPreviewModal
+          show={showPreview}
+          title={previewTitle}
+          onClose={() => setShowPreview(false)}
+        />
       </main>
     </div>
   );
